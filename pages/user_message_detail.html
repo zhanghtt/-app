@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>消息详情</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../css/mui.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript" src="../js/ajax.js"></script>
+<script type="text/javascript" charset="UTF-8">
+	mui.init({
+		swipeBack: true,//启用右滑关闭功能,
+      	beforeback: function(){
+				//释放内存
+				pageurl=null,wc=null,token=null,transtime=null,MsgID=null;sourceurl = null;
+				plus.webview.close(embed);
+				embed=null;
+				//plus.webview.close(ws);
+				ws=null;
+				//返回true，继续页面关闭逻辑
+				return true;
+			}
+	});
+	var ws=null,embed=null,pageurl=null,wc=null,token=null,transtime=null,MsgID=null;
+	var sourceurl = null;
+	mui.plusReady(function(){
+		plus.nativeUI.closeWaiting();//关闭等待框
+      	ws=plus.webview.currentWebview();
+      	pageurl = ws.pageurl;
+      	token = ws.usertoken;
+      	transtime = ws.transtime;
+		MsgID = ws.MsgID;
+		
+		//确定是否需要更新badge的代理
+      		if(ws.updateBage){
+      			mui.fire(plus.webview.getLaunchWebview(),'updateBadge')
+      		}
+		
+		getcontent();
+	});
+	
+	function getcontent() {
+		plus.nativeUI.showWaiting('', {
+			padlock: true
+		});
+		mui.ajax(pageurl,{
+			data:{
+				token:token,
+				transtime:transtime,
+				MsgID:MsgID,
+			},
+			dataType:'json',
+			type:'post',
+			timeout:10000,
+			success:function(data){
+				plus.nativeUI.closeWaiting();
+				data = JSON.parse(data);
+				delegateMessageTimeT(data);
+				if (data.result == 1){
+					//sourceurl = data.Sourceurl;
+					document.getElementById("title").innerHTML = data.Title;
+					document.getElementById("postTime").innerHTML = data.PostTime;
+					document.getElementById("content").innerHTML = data.Content;
+					//document.getElementById("sourcename").innerHTML = data.Source
+				}
+			},
+			error:function(xhr,type,errorThrown){
+				//异常处理；
+				plus.nativeUI.closeWaiting();
+				mui.toast("请求出错");
+			}
+		});
+	}
+	
+	function delegateMessageTimeT(d){
+		d.PostTime = d.PostTime.replace("T"," ");
+		d.PostTime = d.PostTime.substring(0,d.PostTime.lastIndexOf(":"));;
+		return d
+	}
+</script>
+	
+		<style>
+		body { color: #666; font-size: 17px;}
+     	
+     	
+     	.colletion_main { margin: 15px 7px 60px 7px;}
+     	.colletion_main h6 { font-size: 18px; color: #333; line-height: 22px; margin: 0px;}
+     	.colletion_main div.tit { border-bottom: 1px solid #c9c9c9; margin-bottom: 15px;}
+     	.colletion_main div.tit p { margin: 10px 0px 10px; color: #999;}
+     	.colletion_main div.tit span:nth-of-type(1) {display: inline-block; padding: 0px 13px; margin-right: 10px; height: 22px; line-height: 22px; 
+		 border-radius: 30px;}
+		.colletion_main .con { line-height: 24px; overflow-x:scroll;}
+		*{
+        -webkit-user-select: text; /* Disable selection/Copy of UIWebView */
+    }
+     	</style>
+		
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<!--	<a id='confirmBtn' class="mui-icon mui-icon-trash mui-pull-right"></a>-->
+			<h1 class="mui-title">消息详情</h1>
+		</header>
+		<div class="mui-content colletion_main" id="collectnewsdetail">
+			<div class="tit">
+				<h6 id="title">我的消息标题</h6>
+				<p style="text-align: ;"><span  id="postTime"></span></p>
+			</div>
+			<div class="con">
+				<div id="content">
+					
+				</div>
+			</div>			
+		</dvi>
+	</body>
+
+</html>

@@ -1,0 +1,29 @@
+/*
+ *这是单独为项目准备的个性化css，可以覆盖标准mui的css定义；
+ * 在实际项目开发时，建议为App单独写一个css文件，从而实现项目的自定义皮肤功能；
+ * 
+ * */
+
+.mui-plus.mui-android header.mui-bar{
+	display: none;
+}
+.mui-plus.mui-android .mui-bar-nav~.mui-content{
+	padding: 0;
+}
+
+body{ font-family: "微软雅黑"; color: #333;}
+
+/*首页_咨讯信息*/
+#newslist_p { margin: 0px 15px 0px;/* position: relative; height: 460px; */ height:auto; }
+#newslist_p ul li {position: relative; padding-right: 25px; border:1px solid #ddd; margin: 0px auto 16px; background-color: #fff; color: #333; border-radius: 6px;}
+#newslist_p ul .lilg2 {position: relative; padding-right: 25px; border:1px solid #ddd; margin: 0px auto 16px; background-color: #fff; color: #333; border-radius: 6px;}
+#newslist_p ul .lilg2  .jiantao { position: absolute; right: 3px; top: 30px; color: #afafb0;}
+#newslist_p .mui-table-view { background-color: transparent;}
+#newslist_p ul .lilg2 p { color: #333;}
+#newslist_p ul .lilg2 p span { display: inline-block; margin-right: 3px; color: #d80202;}
+#newslist_p ul .lilg2 div { margin-top: 8px; line-height: 22px; color: #a7a5a5;}
+#newslist_p ul .lilg2 div a { display: inline-block; padding: 0px 17px; margin-right: 10px; height: 22px; line-height: 22px; color: #fff; background-color: #08aa45;
+ border-radius: 30px;}
+#newslist_p  .mui-table-view-cell::after { height: 0px;}
+#newslist_p .mui-slider-item { border-top: none;}
+#newslist_p .mui-control-item { padding: 0px 17px 0px 0px;}

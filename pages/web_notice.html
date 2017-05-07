@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+<title>网站公告</title>
+<link rel="stylesheet" type="text/css" href="../css/mui.min.css"/>
+<link rel="stylesheet" type="text/css" href="../js/g/swiper.min.css"/>
+<link rel="stylesheet" type="text/css" href="../js/g/news.css"/>
+<link rel="stylesheet" type="text/css" href="../js/g/dropload.css"/>
+<link rel="stylesheet" type="text/css" href="../js/g/newspp.css"/>
+<script src="../js/params.js" type="text/javascript" charset="utf-8"></script>
+</head>
+<body>
+
+
+<div class="mui-content mui-scroll-wrapper">
+    <!--E下拉刷新-->			 
+    <div class="swiper-container swiper-container-h">
+        <div class="swiper-wrapper" id="news_id_divs">
+ 		<!--每个Menu对应一个Div-->
+			   <div class="swiper-slide content-slide" id="contents_id_item">		   			
+			        <!--隐藏值-保存最近一次加载时间-->
+				    <input type="hidden" class="hidden_gtime"/>
+				    <input type="hidden" class="hidden_curPage" />
+				    <!--图片轮播区域-->
+			   		<!--<div class="div_pics_region"></div>-->
+			   		<div class="div_news_list">
+			            <!--新闻列表-->
+			            <ul class="ul_news_list_common">
+			            			<div  class="mui-scroll-wrapper">
+									<div class="mui-scroll">
+										<div class="mui-loading" style="margin-top: 50px;">
+											<div class="mui-spinner">
+											</div>
+										</div>
+									</div>
+								</div>
+			            </ul>
+		            </div>
+			   </div>
+        <script type="text/html" id="newsArticleListTpl">
+    	    {{#  for(var i = 0, len = d.length; i < len; i++){ }}
+				<li article-type='{{ d[i].ChannelID }}' data-id='{{ d[i].ArticleID}}' category-value='{{ d[i].Category }}'>
+					<span class="mui-icon mui-icon-forward jiantao" ></span>
+					<a  data-newhref="{{ d[i].sourceurl}}"  >
+						<div class="f_card">
+							 <div class="f_card_dd f_card_hpic">
+							  	<div class="title" article-type='{{ d[i].ChannelID }}' data-id='{{ d[i].ArticleID}}'>{{#  if( d[i].isNew == 0){ }}<span>new</span>{{# } }}{{ d[i].title}}</div>									  	
+							  	<div class="fremark"><a  data-newhref="#" class="makers">{{ d[i].Category}}</a>{{ d[i].publicdate}}</div>
+							  </div>	
+						</div>
+					</a>
+				</li>
+        	{{# } }}
+        </script>
+        </div>               
+    </div>
+</div>
+<script src="../js/ajax.js"></script>
+<script src="../js/jquery.min.js"></script>
+<script src="../js/mui.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="../js/sgrb.js"></script>
+<script src="../js/g/webnoticeUtils.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="../js/laytpl.js" ></script>
+<script src="../js/g/swiper.jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="../js/g/dropload.min.js"></script>
+
+<script type="text/javascript">
+
+	mui.init({
+	keyEventBind: {
+		backbutton: false  //关闭back按键监听
+	}
+});
+	
+
+	var artListTpl = document.getElementById('newsArticleListTpl').innerHTML;//新闻列表模板
+
+	var minHeight = document.body.scrollHeight-40;
+    $('.mui-scroll-wrapper').height(minHeight );
+    var currentData = getNowFormatDate();
+    //初始化栏目
+    var g = new GUtils(mui);
+//  SGRB.Init('news');//注释掉之后不能点击跳转
+    var catasList = g.getMenuCatesInfo();//顶部推荐数据
+	g.setCurItem(0);//当前加载第一个
+  function loadListCallback(tNews,curDiv){ 
+  		addIsNewtender(tNews.info);
+		if(tNews.code === statusCode.ERROR){
+				return false;			
+		}else if(tNews.code === statusCode.SUCCESS){
+			laytpl(artListTpl).render(tNews.info,function(h){
+				curDiv.find('.ul_news_list_common').html(h);
+			});			
+		}
+		$('.mui-scroll-wrapper').scrollTop(0);
+  }
+	// oType = 1 判断是否刷新  否则强制刷新
+	function refreshHtml(oType){
+		
+		 var curDiv = $('#contents_id_item');//每个Menu对应一个Div对应的id
+		var gtime = $.trim(curDiv.find('.hidden_gtime').val());//隐藏值-保存最近一次加载时间,$.trim()是jQuery提供的函数，用于去掉字符串首尾的空白字符。
+		//当前时间戳,gtime放回当前元素的值
+		var cGtime =  parseInt(new Date().getTime()/1000);//返回一个整的毫秒数
+		if(oType == false ){
+		   if(gtime.length > 0 && (cGtime - gtime) < 30  ) {
+		   	 return true;//距离上次刷新时间大于30秒
+		   }
+		}
+		curDiv.find('.hidden_gtime').val(cGtime);
+		curDiv.find('.hidden_curPage').val('1');
+		gtime = cGtime;
+
+		//获取catid=1的列表
+		g.getNewsListInfo(ajax_SearchURL,currentData,1,loadListCallback,curDiv);
+		
+		return true;
+	}
+	function loadMoreList(tNews,curDiv,page){
+		addIsNewtender(tNews.info);
+		if(tNews.code === statusCode.ERROR){
+			return false;			
+		}else if(tNews.code === statusCode.SUCCESS){
+			laytpl(artListTpl).render(tNews.info,function(h){
+				curDiv.find('.ul_news_list_common').append(h);
+				curDiv.find('.hidden_curPage').val(page);
+			});			
+		}		
+	}
+	//上拉刷新增加数据
+	function addArcList(){
+		var curDiv = $('#contents_id_item');//每个Menu对应一个Div对应的id
+		var gtime = $.trim(curDiv.find('.hidden_gtime').val());//获取时间
+		var page = curDiv.find('.hidden_curPage').val();//获取page数如1或者2什么的
+		page ++;	//page自增
+		 g.getNewsListInfo(ajax_SearchURL,currentData,page,loadMoreList,curDiv,page);//下拉刷新获取更多数据，主要是传递page自增的数据和时间戳
+		
+	}
+	
+function addIsNewtender(data) {
+		var now = new Date();user = judgeLogin();
+	if(!user){
+		var nowTime = now.getFullYear()+"-"+((now.getMonth()+1)<10?"0":"")+(now.getMonth()+1)+"-"+(now.getDate()<10?"0":"")+now.getDate();
+		for (var i = 0,len=data.length; i < len; i++) {
+	    	 	if(data[i].publicdate) {
+				data[i].isNew=daysBetween(data[i].publicdate,nowTime);
+			}
+	    	 }
+	  }
+    	nowTime = null ,user = null;
+	    	 return data;
+	}
+	
+	//+---------------------------------------------------  
+//| 求两个时间的天数差 日期格式为 YYYY-MM-dd   
+//+---------------------------------------------------  
+function daysBetween(DateOne,DateTwo)  
+{   
+    var OneMonth = DateOne.substring(5,DateOne.lastIndexOf ('-'));  
+    var OneDay = DateOne.substring(DateOne.length,DateOne.lastIndexOf ('-')+1);  
+    var OneYear = DateOne.substring(0,DateOne.indexOf ('-'));  
+  
+    var TwoMonth = DateTwo.substring(5,DateTwo.lastIndexOf ('-'));  
+    var TwoDay = DateTwo.substring(DateTwo.length,DateTwo.lastIndexOf ('-')+1);  
+    var TwoYear = DateTwo.substring(0,DateTwo.indexOf ('-'));  
+  
+    var cha=((Date.parse(OneMonth+'/'+OneDay+'/'+OneYear)- Date.parse(TwoMonth+'/'+TwoDay+'/'+TwoYear))/86400000);   
+    return Math.abs(cha);  
+}  
+	
+
+	
+</script>
+
+<script>
+$(function(){
+	//dropload移动端下拉刷新、上拉加载更多插件 https://github.com/ximan/dropload
+    $('.mui-scroll-wrapper').dropload({
+        scrollArea : $('.mui-scroll-wrapper'),
+        domUp : {
+            domClass   : 'dropload-up',
+            domRefresh : '<div class="dropload-refresh">↓下拉刷新</div>',
+            domUpdate  : '<div class="dropload-update">↑释放更新</div>',
+            domLoad    : '<div class="dropload-load"><span class="loading"></span>加载中...</div>'
+        },
+        domDown : {
+            domClass   : 'dropload-down',
+            domRefresh : '<div class="dropload-refresh"></div>',
+            domLoad    : '<div class="dropload-load"><span class="loading"></span>加载中...</div>',
+            domNoData  : '<div class="dropload-noData">暂无数据</div>'
+        },
+        loadUpFn : function(me){
+        	refreshHtml(true);
+       	 	me.resetload();	// 每次数据加载完，必须重置
+        },
+        loadDownFn : function(me){
+			me.resetload();// 每次数据加载完，必须重置
+        }
+    });
+});
+
+var galleryTop,galleryThumbs;
+//作为闭包使用：
+/**
+ * (function(){
+	//独立作用域
+	})(); 
+ */
+	(function() {
+	   //顶端页面滑动  watchSlidesProgress开启这个参数来计算每个slide的progress(进度) watchSlidesVisibility会在每个可见slide增加一个classname 默认为'swiper-slide-visible'。
+	   //onTap回调函数，当你轻触(tap)Swiper后执行:lockSwipes(). slideTo切换到指定slide  .unlockSwipes() 解锁
+	   //clickedIndex:返回最后点击Slide的索引
+	   //slidesPerView:设置slider容器能够同时显示的slides数量
+	   //slidesOffsetBefore设定slide与左边框的预设偏移量（单位px）
+	   //freeMode默认为false，普通模式：slide滑动时只滑动一格，并自动贴合wrapper，设置为true则变为free模式，slide会根据惯性滑动且不会贴合
+	   //slideToClickedSlide设置为true则swiping时点击slide会过渡到这个slide。
+	   galleryTop = new Swiper('#topMenu', {
+	    		watchSlidesProgress : true,
+            watchSlidesVisibility : false,
+			onTap: function(){
+			  galleryTop.lockSwipes();
+			  galleryThumbs.slideTo( galleryTop.clickedIndex);
+			  galleryTop.unlockSwipes();
+			},
+			slidesPerView: 'auto',
+			slidesOffsetBefore : 5,
+	        freeMode: true,
+	        slideToClickedSlide: true
+	    });  
+	//新闻详情页面的滑动
+	/**
+	 * onSlideChangeStart回调函数，滑块释放时如果触发slider切换则执行。
+	 * onSlideChangeEnd回调函数，slider切换结束时执行
+	 * touchRatio触摸距离与slide滑动距离的比率。
+	 * threshold拖动的临界值（单位为px），如果触摸距离小于该值滑块不会被拖动。
+	 * spaceBetween  slide之间的距离（单位px）。
+	 */
+	    galleryThumbs = new Swiper('.swiper-container-h', {
+		    	onSlideChangeStart: function(){
+		      	   updateNavPosition();
+		    	},
+		    	onSlideChangeEnd:function(s){
+		    		$('#menuMore ul').find('li').removeClass('active-item');
+		    		$('#menuMore ul li').eq(galleryThumbs.activeIndex).addClass('active-item');
+		    		//console.log("galleryThumbs.activeIndex: "+galleryThumbs.activeIndex);0-1-2-3-4-5-6-7
+		    		g.setCurItem(galleryThumbs.activeIndex);//根据activeIndex获取对应的catid，curCateIndex，传入refreshHtml来获取对应的catesList
+		        var curDiv = $('#contents_id_item');//每个Menu对应一个Div对应的id
+		        var curHeight = curDiv.height > minHeight ? curDiv.height : minHeight;
+				refreshHtml(false,false);
+				$('#news_id_divs').height(curHeight);
+				$('.swiper-container-h').height(curHeight);  		
+		    	},
+		    	touchRatio : 1,
+		    	threshold : 50,
+		    spaceBetween: 10
+	    });
+
+
+		$('#menuMore').on('tap',function(){			
+			$('#menuMore').addClass('none');
+		});
+
+		$('#menuMore').on('tap','ul li',function(){			
+			galleryTop.slideTo($(this).attr('data-index'),500,true);
+			galleryTop.activeIndex = $(this).attr('data-index');
+			$('#topMenu .swiper-slide').eq($(this).attr('data-index')).addClass('active-nav');
+			galleryThumbs.slideTo($(this).attr('data-index'));
+			updateNavPosition();
+		    $('#news_id_divs').height('auto');
+	        $('.swiper-container-h').height('auto');
+			$('#menuMore').addClass('none');
+		});
+		
+		/**
+		 * 更新位置
+		 * galleryThumbs.activeIndex：返回当前活动块的索引
+		 */
+		function updateNavPosition(){
+			$('#topMenu .active-nav').removeClass('active-nav');
+			var activeNav = $('#topMenu .swiper-slide').eq(galleryThumbs.activeIndex).addClass('active-nav');
+			if (!activeNav.hasClass('swiper-slide-visible')) {
+					if (activeNav.index() > galleryTop.activeIndex) {
+						var thumbsPerNav = Math.floor(galleryTop.width/activeNav.width())-2;
+						galleryTop.slideTo(activeNav.index()-thumbsPerNav);
+					}else {
+						galleryTop.slideTo(activeNav.index());
+					}	
+			}
+		}
+		
+		
+	$('#topMenu').on('tap','ul li',function(){
+		if($(this).hasClass('active-nav')){
+			galleryTop.lockSwipes();
+			$('.mui-scroll-wrapper').animate({scrollTop: '0px'},500);
+			galleryTop.unlockSwipes();
+		}
+	});
+	   	 	 	
+    $(".mui-scroll-wrapper").scroll(function(){
+       !$('#menuMore').hasClass('none') && $('#menuMore').addClass('none');
+	   $('#news_id_divs').height('auto');
+	   $('.swiper-container-h').height('auto');
+	   var curDiv = $('#contents_id_item');
+	   
+      if( ( curDiv.height() - $('.mui-scroll-wrapper').height() - $(".mui-scroll-wrapper").scrollTop()) < 80  ){
+    		addArcList();//下滑时更具距离自动加载数据
+    	}
+    });			
+}());
+
+//+号点击显示或者隐藏 toggleClass() 对设置或移除被选元素的一个或多个类进行切换。
+$('.addplus').on('tap',function(){
+	//+号按钮
+   $('#menuMore').toggleClass('none');
+// turn2First();
+});
+
+//因为js的网络多请求造成的
+// window.addEventListener('lazyloadlist',function(event) {
+// 	 refreshHtml(true);	
+// });
+mui.init();
+var user;
+mui.plusReady(function() {
+	 refreshHtml(true);
+	var transtime = getNowFormatDate();
+	var url = ajax_articleDetailURL;
+	//点击li
+	
+	mui('.ul_news_list_common').on('tap','li',function(){
+		var userdata=plus.storage.getItem('memberdata');
+	 	user = JSON.parse(userdata);
+		var channelID = this.getAttribute('article-type');
+		var articleID = this.getAttribute('data-id');
+		var category=this.getAttribute('category-value');
+		console.log('category',category);
+		if (unsafe_tap()) return;//防御编码
+		if (user) {
+			mui.openWindow({
+				id: 'web_notice_detail.html',
+				url: 'web_notice_detail.html',
+				styles: {
+					top: 0,
+					bottom: 0,
+					bounce: 'none',
+					popGesture: 'close'
+				},
+				 extras:{
+				 	pageurl:url,
+				 	usertoken:user.token,
+				 	transtime:transtime,
+				 	pagechannelid:channelID,
+				 	pagearticleid:articleID,
+				 	atitle:'网站公告',
+				 	category:category
+				 	
+				 },
+				 waiting:{
+				 	autoShow:false,
+				 },
+				createNew:false,//是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+			});
+		}else {
+			plus.nativeUI.toast("请登录");
+			openpage('login_standard.html');
+		}
+	});
+	
+	//点击来源标签
+	mui('.ul_news_list_common').on('tap','.makers',function(){
+		var channeurl = this.getAttribute('data-newhref');
+		if (channeurl){
+			plus.runtime.openURL(channeurl);
+			 event.stopPropagation();
+		}else {
+			mui.toast('来源网址为空');
+		}
+	});
+	
+});
+
+////点击跳转
+//$('.ul_news_list_common').on('tap','li',function(){
+//	var channelID = this.children[1].getAttribute('article-type');
+//	var articleID = this.children[1].getAttribute('data-id');
+//	
+//	var url = 'http://hsnn.3322.org:8052/api/common/ArticleDetail';
+//	var token = '452830C394B6B3E5B45E32D4D580F13560DB10AA';
+//	
+//	mui.openWindow({
+//		id: 'base_page',
+//		url: 'base_page.html',
+//		styles: {
+//			top: 0,
+//			bottom: 0,
+//			bounce: 'none',
+//			popGesture: 'close'
+//		},
+//		 extras:{
+//		 	pageurl:url,
+//		 	usertoken:token,
+//		 	transtime:currentData,
+//		 	pagechannelid:channelID,
+//		 	pagearticleid:articleID,
+//		 },
+//		 waiting:{
+//		 	autoShow:false,
+//		 },
+//		createNew:false,//是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+//	});
+//});
+
+
+function turnFirst(){
+//	console.log("turnFirst");
+	if(g.getCurCateId() != '1'){
+		galleryTop.slideTo(0,500,true);
+		galleryTop.activeIndex = 0;
+		$('#topMenu .swiper-slide').eq(0).addClass('active-nav');
+		galleryThumbs.slideTo($(this).attr('data-index'));
+	}
+	$('.mui-scroll-wrapper').animate({scrollTop: '0px'},500);
+//	updateNavPosition();
+	!$('#menuMore').hasClass('none') && $('#menuMore').addClass('none');		
+}
+
+</script>
+
+</body>
+</html>
