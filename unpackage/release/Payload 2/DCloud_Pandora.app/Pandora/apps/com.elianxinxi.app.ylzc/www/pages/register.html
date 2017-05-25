@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>用户注册</title>
+    <link href="../css/mui.min.css" rel="stylesheet"/>
+    <style>
+    body header.mui-bar{ background-color:#f00;}
+		header.mui-bar .mui-title { display: none;}
+		header.mui-bar a { color: #fff;}
+    		#bigdiv input {
+				border: none;
+				margin: 0px;
+				font-size: 16px;
+				padding: 15px 15px 15px 32px !important;
+				border-radius: 0px;
+				height: auto;
+				border-bottom: 1px solid #cce5f3;
+				color: #fff;
+				background-color: transparent;
+				
+			}
+			
+			#bigdiv ul { background-color: transparent; padding: 0px; list-style: none;}
+			#bigdiv ul li { padding: 0px; margin: 0px;}
+    		body { background: #0074be url(../images/findpswbg.png) center top no-repeat; background-size: 100%;}
+    		.findpwdicon { text-align: center; margin: 60px auto 40px;}
+			.findpwdicon > div {background-color: #fff; width: 100px; height: 90px; padding-top: 6px; margin: 0px auto; text-align: center; border-radius:20px;}
+			.findpwdicon div span { color: #00ace0;font-size: 56px; font-weight: bold;}
+			.findpwdicon div p { color: #00ace0;line-height: 30px; font-size: 18px; }
+			.mobile { background: transparent url(../images/find_phone.png) left center no-repeat;background-size: 25px;}
+			.checkdiv input { background:url(../images/find_check.png) left center no-repeat;background-size: 25px;}
+			.pwddiv { position: relative;}
+			.pwddiv>input { z-index: 0;  position: relative;background:url(../images/find_pwd.png) left center no-repeat;background-size: 25px;}
+			#get_checkcode {position:absolute;top: 64px;right: 1px;}
+			#get_checkcode button { display: inline-block; width: 5em; padding: 0px; height: 24px; line-height: 24px; font-size: 16px;
+			background-color: transparent; border:none;}
+	    	.ppsubmitbtn button { display: block; width: 100%; color: #0072bd;  background-image:linear-gradient(to top left,#cac9c9,#fff); border:none;}
+	    	#bigdiv { width:78%; min-width: 270px; margin: 0px auto; position: relative; background-color: transparent;}	
+	    	#bigdiv input { border-radius: 0px;}   
+	    	#bigdiv .ppsubmitbtn { margin: 0px; padding: 0px;} 	
+	    	#bigdiv .ppsubmitbtn button { display: block; margin:22px 0px 0px; padding: 0px; height: 46px; line-height: 46px; font-size: 18px; }
+			#bigdiv .pwddiv #forpwd01, #bigdiv .pwddiv #forpwd02   { z-index: 10; width: 90px; height: 40px; position: absolute; top: 0px; right:-33px; padding: 0px;}
+			#bigdiv .pwddiv #forpwd01:after, #bigdiv .pwddiv #forpwd02:after,#bigdiv ul:before, #bigdiv ul::after  { height: 0px;}
+			#bigdiv input::-webkit-input-placeholder { color: #6cbee3;}
+			.checkdiv { position: relative;}
+			#bigdiv .checkdiv button { position: absolute; right: 0; top: 14px; font-size: 15px; display: block; padding: 0px; width: 6em;text-align: right; background-color: transparent; border:none; color: #fff;}
+    </style>
+</head>
+<body>
+	<div class="findpwdicon">
+			<div>
+				<span class="mui-icon mui-icon-personadd"></span>
+				<p>用户注册</p>
+			</div>
+		</div>
+	
+	<div class="mui-content mui-center" id="bigdiv">
+		<ul class="mui-table-view">
+			<li class="mui-table-view-cell">
+				<div class="mui-input-row">
+					<input type="text" class="mui-input-clear mobile" value="" placeholder="请输入手机号码" maxlength="11" />
+				</div>
+				<div class="mui-input-row checkdiv">
+					<input type="text" value="" placeholder="请输入验证码" class="code" maxlength="6"/>
+					<button type="button" class="mui-btn getCode">获取验证码</button>
+				</div>
+				<div class="mui-input-row pwddiv">
+					<input type="password" id="pwd01" class="mui-input-clear firstpassword" maxlength="16" value="" placeholder="请输入密码(6~16位)" />
+					<div class="mui-table-view-cell" id="forpwd01">
+						<span></span>
+						<div class="mui-switch mui-switch-green mui-switch-mini">
+							<div class="mui-switch-handle"></div>
+						</div>
+					</div>
+				</div>
+			</li>
+		</ul>
+		<div class="ppsubmitbtn">
+		<button type="button" class="mui-btn mui-btn-green mui-btn-block sub_go">注册</button>
+		</div>
+	</div>
+	
+<script src="../js/mui.min.js" type="text/javascript"></script>
+<script src="../js/ajax.js" type="text/javascript"></script>
+<script src="../js/jquery-1.11.1.min.js"></script>
+<script src="../js/core.js"></script>
+<script src="../js/enc-base64.js"></script>
+<script type="text/javascript" charset="UTF-8">
+	mui.init({
+  		swipeBack: true,
+  		beforeback: function(){
+				//释放内存
+				 mobile = "",
+			  		code = "",
+			  		getCode= "",
+			  		firstpassword = "",
+			  	 Time = null,
+			  	 transtime = null,
+			  	 s = null;
+			  	 issend = null;
+				//返回true，继续页面关闭逻辑
+				return true;
+			}
+  	});
+  	var mobile = "",
+  		code = "",
+  		getCode= "",
+  		firstpassword = "";
+  	var Time = 60;
+  	var transtime = getNowFormatDate();
+  	var s = null;
+  	var issend = true;
+     mui.plusReady(function() {
+      		mobile = document.getElementsByClassName("mobile")[0];
+      		getCode = document.getElementsByClassName("getCode")[0];
+      		code = document.getElementsByClassName("code")[0];
+      		firstpassword = document.getElementsByClassName("firstpassword")[0];
+      		var info = plus.push.getClientInfo();
+      		//获取短信验证码的点击事件
+      		mui("#bigdiv").on("tap", ".getCode", function() {
+      			if(issend){
+      				getCodeWithURL();
+      			}		
+      		});
+      		mui('#bigdiv').on('tap', '.sub_go',function() {
+//    			openpage("register_user_data.html");
+//				if(firstpassword.value.length<6||firstpassword.value.length>16){
+//					mui.toast("请确保输入6-16位密码");
+//					return;
+//				}
+      			var success = verifationData();
+      			if (success) {
+      				var str=CryptoJS.enc.Utf8.parse(firstpassword.value);
+					var base64=CryptoJS.enc.Base64.stringify(str);
+					
+      				mui.post(ajax_registerURL, {
+      					transtime: transtime,
+      					PhoneNum: mobile.value,
+      					Password: base64,
+      					Code: code.value,
+      					ClientID: info.clientid,
+      					IOSToken: info.token,
+      					},function(data){
+      						data = JSON.parse(data);
+      						if(data.result == 1) {
+      							plus.storage.setItem('phoneNumber',mobile.value);
+      							mui.toast('注册成功');
+      							mui.back();
+      							//注册成功，存储必要的个人数据,进入个人资料完善页面
+//    							openpage("register_user_data.html");
+      						}else {
+      							mui.toast(data.message);
+      						}
+      					},'json'
+      				);
+      			}
+      		});
+      		
+      		
+      	});
+      	
+      	//发送短信验证码
+      	function getCodeWithURL() {
+      		var _regex_mobile = /(^1[3|5|8][0-9]{9}$)/;
+      		if (!mobile.value) {
+      			mui.toast('请输入手机号码');
+      			return;
+      		} else if (!_regex_mobile.test(mobile.value)) {
+      			mui.toast('请输入正确的手机号码');
+      			return;
+      		} else {
+      			issend = false;
+      			//发送短信验证码点击事件
+      			mui.ajax(ajax_getCode,{
+      				data: {
+      					transtime: transtime,
+      					PhoneNum: mobile.value,
+      					CodeType: "0",
+      				},
+      				dataType: 'json',
+      				type: 'post',
+      				timeout: 10000,
+      				success: function(back) {
+      					back = JSON.parse(back);
+      					//服务器返回响应，根据响应结果，分析是否登录成功; 
+      					if (back.result == 1) {
+      						setTimeout(function() {
+								mui.toast("验证码发送成功");
+							}, 8000);
+      						code.focus();
+      					} else {
+      						mui.toast(back.message);	
+      					}
+      					
+      					for (i = 1; i <= Time; i++) {
+      						window.setTimeout("update_a(" + i + ","+Time+")",i*1000);
+      					}
+      				},
+      				error:function(xhr,type,errorThrown){
+						//异常处理；
+						mui.toast('请求出错');
+					}
+      			});
+      		}
+      	}
+      	
+      	//倒计时开始
+      	function update_a(num,t) {
+      		if(num == t) {
+      			getCode.innerHTML = "重新发送";
+      			issend = true;
+      		} else {
+      			var printnr = t - num;
+      			getCode.innerHTML = printnr + " 秒"
+      		}
+      	}
+      	
+      	//验证表单的正确性
+      	function verifationData() {
+      		var success = true;
+      		var _regex_mobile = /(^1[3|5|8][0-9]{9}$)/;
+      		var _regex_code = /^\d{6}$/;
+      		var _regex_pwd = /^([0-9a-zA-Z]|\d){6,16}$/;
+      		if (!mobile.value) {
+      			success = false;
+      			mui.toast('请输入手机号码');
+      		} else if(!_regex_mobile.test(mobile.value)){
+      			success = false;
+      			mui.toast('请输入正确的手机号码');
+      		} else if (!code.value) {
+      			success = false;
+      			mui.toast('请输入验证码');
+      		} else if(!_regex_code.test(code.value)) {
+      			success = false;
+      			mui.toast('请输入正确的验证码');
+      		} else if (!firstpassword.value) {
+      			success = false;
+      			mui.toast('请输入密码');
+      		} else if (!_regex_pwd.test(firstpassword.value)){
+      			success = false;
+				mui.toast('请确保输入6-16位密码');
+      		} else {
+      			success = true;
+      		}
+      		return success;
+      	};
+</script>
+<script>
+		//密码显示功能
+			mui('.mui-content .mui-switch').each(function() { //循环所有toggle
+				//toggle.classList.contains('mui-active') 可识别该toggle的开关状态				
+				//toggle 事件监听				 
+				this.addEventListener('toggle', function(event) {
+					//event.detail.isActive 可直接获取当前状态
+					if(event.detail.isActive){ $("#pwd01").attr("type","text");}
+					else{$("#pwd01").attr("type","password");}
+				});
+			});
+		</script>
+</body>
+</html>

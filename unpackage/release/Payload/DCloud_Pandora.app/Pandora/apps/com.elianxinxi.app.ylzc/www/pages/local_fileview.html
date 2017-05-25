@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=3.0, minimum-scale=1.0;,user-scalable=yes" />
+    
+    <title></title>
+    <script src="../js/mui.min.js"></script>
+    <link href="../css/mui.min.css" rel="stylesheet"/>
+    <link href="../css/zssg.css" rel="stylesheet"/>
+	<script type="text/javascript" charset="utf-8">
+mui.init({
+      		beforeback: function(){
+				//释放内存
+				//plus.webview.close(currentview);
+				currentview = null;
+				
+				filepath=null;
+				//返回true，继续页面关闭逻辑
+				return true;
+			}
+      	});
+   var currentview=null,filepath = null;
+// 扩展API加载完毕，现在可以正常调用扩展API 
+function plusReady(){
+	plus.nativeUI.closeWaiting();
+	 currentview = plus.webview.currentWebview();
+	  filepath = currentview.filepath;
+	loadUrl(filepath)
+}
+
+// 使用Native.js调用Webview的loadUrl方法跳转页面
+function loadUrl(filepath){
+	// 导入UIWebview、NSURLRequest、NSURL类
+	var Webview = plus.ios.importClass("UIWebview");
+	var NSURLRequest = plus.ios.import('NSURLRequest');
+	var NSURL = plus.ios.import('NSURL');
+	// 获取当前Webview对象的实例
+	var wv = plus.ios.currentWebview();
+	var absoluteurl=plus.io.convertLocalFileSystemURL(filepath)
+	console.log("absoluteurl:",absoluteurl)
+	var url_file = NSURL.fileURLWithPath(absoluteurl);
+	// 创建请求对象
+	var req = NSURLRequest.requestWithURL(url_file);
+	// 跳转页面
+	plus.ios.invoke(wv,"loadRequest:",req);
+	// 释放对象(可选)
+	plus.ios.deleteObject(req);
+	plus.ios.deleteObject(wv);
+	Webview = null,NSURLRequest=null,NSURL =null,wv = null,absoluteurl=null,url_file=null;
+}
+
+// 判断扩展API是否准备，否则监听"plusready"事件
+if(window.plus){
+	plusReady();
+}else{
+	document.addEventListener("plusready",plusReady,false);
+}
+		</script>
+		<link rel="stylesheet" href="../css/common.css" type="text/css" charset="utf-8"/>
+		<style>
+        body{height:245px; overflow: hidden; background: url('../images/load1.gif') no-repeat center 200px; background-size: 80px;}
+      
+    </style>
+	</head>
+	<body>
+		
+	</body>
+	<script type="text/javascript" src="../js/immersed.js" ></script>
+</html>

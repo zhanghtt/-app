@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>公司介绍</title>
+    
+    <link href="../css/mui.min.css" rel="stylesheet"/>
+    <style>
+		.title{
+			margin: 20px 0px 7px;
+			color: #000;
+			font-size: 17px;
+			background-color: #fff;
+		}
+		#setting_list div.mui-table-view-cell:after { left: 0px;}
+		#setting_list div.mui-table-view-cell:before {
+    position: absolute;
+    right: 0;
+    top: 0;
+    left: 0px;
+    height: 1px;
+    content: '';
+    -webkit-transform: scaleY(.5);
+    transform: scaleY(.5);
+    background-color: #c8c7cc;
+}
+		.powered{
+			bottom: 0; 
+			position: relative; 
+			text-align: center; 
+			width: 100%; 
+			padding-bottom:0.5rem;
+			font-size: 0.6rem; 
+			color: #aaa; 
+			line-height: 1rem;
+		}
+		.title{
+				margin: 20px 15px 7px;
+				color: #6d6d72;
+				font-size: 15px;
+			}
+		#about_company{
+			padding: 5px;
+			 word-wrap: break-word;
+			 font-size: 16px;
+		   color: rgb(69,69,69);
+		}
+		
+	</style>
+</head>
+<body>	
+		<div id="about_company" ></div>
+		<nav class="powered" onclick="mui.toast('欢迎来到易联招采APP');">易联招采APP <span id="curvar"></span><br> &copy; 2016</nav>
+	</div>
+	
+	<script src="../js/jquery-1.11.1.min.js"></script>
+	<script src="../js/mui.min.js"></script>
+	<script src="../js/ajax.js"></script>
+	<script type="text/javascript" src="../js/index/updatefunc.js" ></script>
+	<script type="text/javascript" charset="UTF-8">
+      	mui.plusReady(function() {
+      		console.log(ajax_getAboutCompany)
+      		mui.ajax(ajax_getAboutCompany,{
+				data:{},
+				type:'get',
+				timeout:10000,
+				success:function(data_){
+					document.getElementById("about_company").innerHTML = data_
+				}});
+      	});
+		
+   </script>    
+</body>
+</html>

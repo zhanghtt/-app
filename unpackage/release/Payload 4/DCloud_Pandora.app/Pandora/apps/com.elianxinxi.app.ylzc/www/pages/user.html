@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html class="ui-page-login">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>用户中心</title>
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../css/iconfont.css"/>
+		<style type="text/css">
+    		.headImg {
+    			position: relative;
+    			padding: 8% 0px 9% 0px;
+    			background: url(../images/personal_bg@2x.jpg);
+    			text-align: center;
+    			background-size: 100% auto;
+    		}
+    		
+    		.touxiang {
+    			
+    			text-align: center;
+    			padding-bottom: 16px;
+    		}
+    		.cycleImage {
+    			width: 4em;
+    			height: 4em;
+    			padding: 0px;
+    			border-radius: 50%;
+    			border: 2px solid white;
+    			color: gray;
+    			margin: 0px auto;
+    			margin-bottom: 5px;
+    		}
+    		li a img {
+    			height: 30px;
+    			padding: 5px;
+    			float: left;
+    		}
+    		#ppabout ul li { line-height: 30px;}
+    		#touxiangword { font-size: 20px; padding: 0px; margin: 0px; color: #fff;}
+    		#touxiangword span { display: inline-block; margin-left: 5px; color: #f60;}
+    		.ppinfor { position: absolute; left: 0px; bottom: 0px; width: 100%; height: 60px; padding-top: 8px; background-color: rgba(0,0,0,0.2);}
+    		.ppinfor p { line-height: 22px; font-size: 14px; margin: 0px;}
+    		
+    </style>
+	</head>
+	<body>
+		<div class="mui-content" id="ppabout">
+		<div class="headImg" id="userinfo">
+			<div class="touxiang">
+				<div class="cycleImage">
+					<img id="trueimg" src="../images/avatar.jpg"  style="width: 100%; height: 100%; border-radius: 50%;" />	
+				</div>
+				<p id="touxiangword">请登录<span></span></p>				
+			</div>
+			<div class="ppinfor">
+					<p id="companyName" style="color:white"></p>
+					<p id="agreementTime" style="color:white"></p>
+			</div>
+		</div>
+		<div class="content" id="userlist">
+			<ul class="mui-table-view " style="margin-top: 10px;">
+				
+				<li class="mui-table-view-cell"  id="about_company.html">
+					<a id="about" class="mui-navigate-right">
+						<span><img src="../icon/icon.png" /></span>
+						关于易联
+					</a>
+				</li>		
+			</ul>
+			<ul class="mui-table-view " style="margin-top: 10px;">
+				
+				<li class="mui-table-view-cell"  id="user_message.html">
+					<a id="changeaddress" class="mui-navigate-right">
+						<span><img src="../images/personal_icon_news@3x.png" /></span>
+						我的消息
+					</a>
+				</li>		
+				<li class="mui-table-view-cell" id="user_cllection.html">
+					<a class="mui-navigate-right">
+						<span><img src="../images/personal_icon_news_collection@3x.png" /></span>
+						我的收藏
+					</a>
+				</li>	
+				<li class="mui-table-view-cell" id="web_notice.html">
+					<a class="mui-navigate-right">
+						<span><img src="../images/personal_icon_web_notice@3x.png" /></span>
+						网站公告
+					</a>
+				</li>	
+			</ul>
+			<ul class="mui-table-view" style="margin-top: 10px;">
+				<li class="mui-table-view-cell" id="user_setting.html">
+					<a class="mui-navigate-right">
+						<span><img src="../images/personal_icon_news_set@3x.png"/></span>
+						设置中心
+					</a>
+				</li>
+				<li class="mui-table-view-cell" id="user_changepwd.html">
+					<a class="mui-navigate-right" >
+						<span><img src="../images/personal_icon_password_find@3x.png"/></span>
+						修改密码
+					</a>
+				</li>
+			</ul>
+			<ul class="mui-table-view" style="margin-top: 10px;">
+				<li class="mui-table-view-cell" id="trash_user_cache.html">
+					<a class="mui-navigate-right">
+						<span class="mui-icon mui-icon-trash"></span>
+						附件管理
+					</a>
+				</li>
+				<li class="mui-table-view-cell"  id="about.html">
+					<a id="changeaddress" class="mui-navigate-right">
+						<span class="mui-icon mui-icon-info"></span>
+						版本信息
+					</a>
+				</li>
+				</ul>
+			
+			<ul class="mui-table-view" style="margin-top: 10px;margin-bottom: 20px;">
+				
+				<li class="mui-table-view-cell" style="text-align: center;" id="signout">
+					<span style="color: indianred;">退出登录</span>
+				</li>
+			</ul>
+		</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/ajax.js"></script>
+		<script>
+			mui.init();
+			var ws=null,user=null;
+			var openlogin="0";
+			var transtime=null;
+			var news = null,analysis = null,h = null;
+			
+			mui.plusReady(function(){
+				ws=plus.webview.currentWebview();
+				 transtime = getNowFormatDate();
+				 h=plus.webview.getWebviewById( plus.runtime.appid );//获取应用入口页面的方法
+				 news = plus.webview.getWebviewById("pages/news.html")
+				analysis = plus.webview.getWebviewById("pages/analysis.html")
+				//判断显示文字
+				user = judgeLogin();
+				if (user){
+					getuser();
+				}
+				document.getElementById('userinfo').addEventListener('tap',function(){
+					user = judgeLogin();
+			    	  	if(user){
+			    	  		openpage("user_info.html")
+			    	  	}else{
+			    	  		plus.nativeUI.toast("请登录");
+			    	  		openpage('login_standard.html');
+			    	  	}
+			    });
+				mui("#userlist").on('tap', 'li', function() {
+					if (unsafe_tap()) return;//防御编码
+					//点击事件
+					user = judgeLogin();
+					var page=this.getAttribute("id");
+					if (page == "signout") {
+						if (user){
+							loginout(user);
+						}
+					}else if(page == "about.html" || page =="about_company.html"){
+						openpage(page);
+					}
+					else {
+						if(user){
+							openpage(page);
+						}else{
+							plus.nativeUI.toast("请登录");
+							openpage('login_standard.html');
+						}
+					}
+					
+			    });
+			    var first = null;
+			    mui.back = function() {
+					//首次按键，提示‘再按一次退出应用’
+					if (!first) {
+						first = new Date().getTime();
+						mui.toast('再按一次退出应用');
+						setTimeout(function() {
+							first = null;
+						}, 1000);
+					} else {
+						if (new Date().getTime() - first < 1000) {
+							plus.runtime.quit();
+						}
+					}
+			   };
+			   //登陆后出发此事件获取个人信息并加载
+			   window.addEventListener('getUserInfoFromServer',function(event) {
+			   		user = judgeLogin();
+			   		var token = user.token;
+			   		mui.post(ajax_menberInfoURL,{
+								transtime:transtime,
+								token:token
+							},function(data){
+								console.log('userinfo:',data);
+								data = JSON.parse(data);
+								if  (data.result == 1){
+	//								mui.toast('更新个人资料成功');
+									user.token = token;
+									user.id = data.UserID;
+									user.name = data.UserName;
+									user.headimg = data.Avatar;
+									user.company = data.MemberName;
+									user.address = data.Address;
+									user.alias = data.MemberAlias;
+									user.starttime = data.StartTime;
+									user.endtime = data.EndTime;
+									user.grounpname = data.GroupName;
+									user.amout = data.amount;
+									var memberdata=JSON.stringify(user);
+									plus.storage.setItem('memberdata',memberdata);
+									
+									//根据个人信息展示
+									getuser();
+									mui.fire(h,'changeHeadImgIndex',{
+									
+									});
+								}
+							},'json'
+						);
+			   });
+			   
+			   //修改密码之后触发此事件，退出登录，重新登录
+			   document.addEventListener('changepwdLogintout',function() {
+			   		user = judgeLogin();
+			   		loginout(user);
+			   })
+			   
+			});
+			 //用户退出
+			function loginout(user){
+				plus.storage.removeItem('memberdata');
+				//先更新news
+				news.reload(false);
+				document.getElementById("touxiangword").innerHTML='请登录';
+				document.getElementById("companyName").innerHTML = '';
+				document.getElementById("agreementTime").innerHTML = '';
+				document.getElementById("trueimg").src = "../images/avatar.jpg"
+				
+				mui.fire(h,'changeHeadImgIndex',{
+					
+				});
+				plus.nativeUI.toast("退出登录成功");
+			   mui.post(ajax_loginoutURL,{
+							transtime:transtime,
+							token:user.token
+						},function(data){
+							analysis.reload(false);
+						},'json'
+					);
+			}
+			//登陆成功之后，更新个人信息
+			function getuser() {
+				 user = judgeLogin();
+				 if (user) {
+				 	var token = user.token;
+//				 	if (user.alias){
+//				 		document.getElementById("touxiangword").innerHTML= user.id + '<span>'+ user.alias+ '</span>';
+//				 	}else {
+//				 		document.getElementById("touxiangword").innerHTML= user.id + '<span></span>';
+//				 	}
+
+					 document.getElementById("touxiangword").innerHTML= user.name==undefined?'':user.name + '<span></span>';
+					if (user.company){
+						document.getElementById("companyName").innerHTML = user.company;
+					}else {
+						document.getElementById("companyName").innerHTML = '请完善个人信息';
+					}
+					if(user.starttime && user.endtime) {
+						document.getElementById("agreementTime").innerHTML = '使用时间:'+user.starttime+'到'+user.endtime
+					}else {
+						document.getElementById("agreementTime").innerHTML = '';
+					}
+					if (user.headimg) {
+						document.getElementById("trueimg").src = host + user.headimg
+					}
+				 }
+				 token = null;
+				 user = null;
+			}
+			
+			
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>修改密码</title>
+    <link href="../css/mui.min.css" rel="stylesheet"/>
+    <link href="../css/app.css" rel="stylesheet"/>
+    <link href="../css/mystyle.css" rel="stylesheet"/>
+     <style>
+     		header.mui-bar-nav { -webkit-box-shadow:none;box-shadow:none; background-color: transparent;}
+			header.mui-bar-nav .mui-title { display: none;}
+			.mui-bar-nav a { color: #fff;}
+    		#changediv input {
+				border: none;
+				margin: 0px;
+				font-size: 16px;
+				padding: 15px 15px 15px 32px !important;
+				border-radius: 0px;
+				height: auto;
+				border-bottom: 1px solid #cce5f3;
+				color: #fff;
+				background-color: transparent;
+				
+			}
+			#changediv ul { background-color: transparent;}
+			#changediv ul li { padding: 0px; margin: 0px;}
+    		body { background: #0074be url(../images/findpswbg.png) center top no-repeat; background-size: 100%;}
+    		.findpwdicon { text-align: center; margin: 60px auto 40px;}
+			.findpwdicon > div {background-color: #fff; width: 100px; height: 90px; padding-top: 6px; margin: 0px auto; text-align: center; border-radius:20px;}
+			.findpwdicon div span { color: #00ace0;font-size: 56px; font-weight: bold;}
+			.findpwdicon div p { color: #00ace0;line-height: 20px; font-size: 18px; }
+			.mobile { background: transparent url(../images/find_phone.png) left center no-repeat;background-size: 25px;}
+			.checkdiv input { background:url(../images/find_check.png) left center no-repeat;background-size: 25px;}
+			.pwddiv { position: relative;}
+			.pwddiv>input { z-index: 0;  position: relative;background:url(../images/find_pwd.png) left center no-repeat;background-size: 25px;}
+			#get_checkcode {position:absolute;top: 64px;right: 1px;}
+			#get_checkcode button { display: inline-block; width: 5em; padding: 0px; height: 24px; line-height: 24px; font-size: 16px;
+			background-color: transparent; border:none;}
+	    	.ppsubmitbtn button { display: block; width: 100%; color: #0072bd;  background-image:linear-gradient(to top left,#cac9c9,#fff); border:none;}
+	    	#changediv { width:78%; min-width: 270px; margin: 0px auto; position: relative; background-color: transparent;}	
+	    	#changediv input { border-radius: 0px;}   
+	    	#changediv .ppsubmitbtn { margin: 0px; padding: 0px;} 	
+	    	#changediv .ppsubmitbtn button { display: block; margin:22px 0px 0px; padding: 0px; height: 46px; line-height: 46px; font-size: 18px; }
+			#changediv .pwddiv #oldpwd, #changediv .pwddiv #newpwd   { z-index: 10; width: 90px; height: 40px; position: absolute; top: 0px; right:-33px; padding: 0px;}
+			#changediv .pwddiv #oldpwd:after,.mui-table-view:before{ height: 0px;}
+			#changediv .pwddiv #newpwd:after { height: 0px;}
+			#changediv input::-webkit-input-placeholder { color: #6cbee3;}
+			.checkdiv { position: relative;}
+			#changediv .checkdiv button { position: absolute; right: 0; top: 13px; font-size: 15px; display: block; padding: 0px; width: 5em; background-color: transparent; border:none; color: #fff;}
+    </style>
+ 
+ 
+</head>
+<body>
+	<div class="findpwdicon">
+			<div>
+				<span class="mui-icon mui-icon-compose"></span>
+				<p>修改密码</p>
+			</div>
+	</div>
+	
+	<div class="mui-content mui-center" id="changediv">
+		<ul class="mui-table-view">
+			<li class="mui-table-view-cell">
+				<div class="mui-input-row pwddiv">
+					<input id="fristpassword" type="password" class="mui-input-clear " maxlength="16" value="" placeholder="请输入原始密码" />
+					<div class="mui-table-view-cell" id="oldpwd">
+						<span></span>
+						<div class="mui-switch mui-switch-green mui-switch-mini">
+							<div class="mui-switch-handle"></div>
+						</div>
+					</div>
+				</div>
+				<div class="mui-input-row pwddiv">
+					<input id="repassword" type="password" class="mui-input-clear " maxlength="16" value="" placeholder="请输入新密码" />
+					<div class="mui-table-view-cell" id="newpwd">
+						<span></span>
+						<div class="mui-switch mui-switch-green mui-switch-mini">
+							<div class="mui-switch-handle"></div>
+						</div>
+					</div>
+				</div>
+			</li>
+		</ul>
+		<div class="ppsubmitbtn">
+		<button type="button" class="mui-btn mui-btn-green mui-btn-block sub_go" id="changepwd">完成</button>
+		</div>
+	</div>
+	
+	<script src="../js/mui.min.js"></script>
+	<script src="../js/ajax.js" ></script>
+	<script src="../js/jquery-1.11.1.min.js"></script>
+	<script src="../js/core.js"></script>
+    <script src="../js/enc-base64.js"></script>
+	<script type="text/javascript" charset="UTF-8">
+			mui.init({
+	      		swipeBack: true,
+	      		beforeback: function(){
+					//释放内存
+					document.body.style.backgroundImage="url('')";
+					document.body.innerHTML = '';
+					 fristpassword = null;
+			      	 repassword = null;
+			      	 transtime=null;
+			      	 token = null;
+			      	 user = null;
+			      	 ms=null;
+					//返回true，继续页面关闭逻辑
+					return true;
+				}
+	      	});
+	      	var fristpassword = null;
+	      	var repassword = null;
+	      	var transtime=null;
+	      	var token = null;
+	      	var ms=null;
+	      	var user = null;
+	      	mui.plusReady(function() {
+	      		ms = plus.webview.getWebviewById('pages/user.html');
+	      		transtime = getNowFormatDate();
+	      		user=plus.storage.getItem('memberdata');
+	      		var userdata=JSON.parse(user);
+	      		token = userdata.token;
+	      		document.getElementById("changepwd").addEventListener('tap',function() {
+	      			fristpassword = document.getElementById("fristpassword").value;
+	      			repassword = document.getElementById("repassword").value;
+	      			var str=CryptoJS.enc.Utf8.parse(fristpassword);
+					var fristpassword_base64=CryptoJS.enc.Base64.stringify(str);
+	      			
+	      			var restr = CryptoJS.enc.Utf8.parse(repassword);
+	      			var repassword_base64=CryptoJS.enc.Base64.stringify(restr);
+	      			
+	      			mui.post(ajax_modPwordURL, {
+	      				token:token,
+      					transtime:transtime,
+      					OldPassword:fristpassword_base64,
+      					PassWord:repassword_base64,
+      					},function(data){
+//    						console.log(data);
+      						data = JSON.parse(data);
+      						if(data.result == 1) {
+      							mui.toast('修改密码成功');
+      							mui.fire(ms,'changepwdLogintout',{
+									
+								});
+      							mui.back();
+      							
+      						}else {
+      							mui.toast(data.message);
+      						}
+      					},'json'
+      				);
+	      		},false)
+	      	});
+		//密码显示功能
+			mui('.mui-content .mui-switch').each(function() { 
+				this.addEventListener('toggle', function(event) {
+					if(event.detail.isActive){ $(this).parent().siblings("input").attr("type","text");}
+					else{$(this).parent().siblings("input").attr("type","password");}
+				});
+			});
+		</script>
+    
+</body>
+</html>

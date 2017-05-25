@@ -1,0 +1,30 @@
+* {
+		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+	}
+	.userAvatar {
+		text-align: center;
+		width: 40%;
+		margin: 10px auto;
+	}
+	.userAvatar img {
+		border-radius: 50%;
+		width: 100px;
+		height: 100px;
+	}
+	.avatarEdit {
+		margin-bottom: 10px;
+		text-align: center;
+		font-size: 16px;
+		color: #000;
+	}
+	#user_infor ul { margin: 20px 0px 0px; border-top: 1px solid #ddd; }
+	#user_infor ul li { position: relative; padding: 5px 15px; height: 50px; line-height: 40px; border-bottom: 1px solid #ddd; font-size: 16px;}
+	#user_infor ul li span:nth-of-type(1){ display: inline-block; margin-right: 20px; color: #999;}
+	#user_infor ul li span:nth-of-type(3){ position: absolute; right: 5px; top: 10px; display: inline-block; color: #d7d7d9;}
+	#user_infor ul li span:nth-of-type(2){ display: inline-block; color: #000;}
+	#user_infor #con_tel { color: #999;}
+	#user_infor input { display: inline-block; width: 220px; margin: 0px; padding: 0px; border: none; color: #333;}
+	input::-webkit-input-placeholder { color: #333;}
+	#user_infor ul li .mui-input-row { margin: 0px; padding: 0px;}
+	#user_infor ul li input { height: 40px;}

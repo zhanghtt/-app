@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<title>收藏列表</title>
+    <link href="../css/mui.min.css" rel="stylesheet"/>
+    <style>
+     	#pullrefresh { margin: 20px 0px 60px; padding: 0px; font-size: 14px;}
+     	#pullrefresh ul { margin: 0px; padding: 0px 15px; background-color: transparent;}
+     	#pullrefresh ul li {position: relative; padding:13px 25px 10px 15px; border:1px solid #ddd; margin: 0px auto 16px; background-color: #fff; color: #333; border-radius: 6px;}
+		#pullrefresh ul li .jiantao { z-index: 1; position: absolute; right: 3px; top: 50%; margin:-12px 0px 0px;color: #aeaeaf;}	
+		#pullrefresh ul li .newscon h6 { margin: 0px 0px 6px;}	
+		#pullrefresh ul li .newscon h6 a{ color: #333; font-size: 15px;}
+		#pullrefresh ul li .newscon p { margin-bottom: 5px;}
+		#pullrefresh ul li .newscon p a{ color: #666;}
+		#pullrefresh ul li .newscon h6 a span { display: inline-block; margin-right: 3px; color: #d80202;}
+		#pullrefresh ul li .newscon div { margin-top: 0px; line-height: 22px; color: #a7a5a5;}
+		#pullrefresh ul li .newscon div a { display: inline-block; padding: 0px 17px; margin-right: 10px; height: 22px; line-height: 22px; color: #fff; background-color: #08aa45;
+		 border-radius: 30px;}
+		#pullrefresh ul:after,#pullrefresh ul li.mui-table-view-cell:after,.mui-table-view:before { height: 0px;}
+		#pullrefresh ul li .mui-slider-right { z-index: 2;}
+     	
+     </style>
+    
+</head>
+<body>
+<div id="pullrefresh" class="mui-content mui-scroll-wrapper">	
+<div class="mui-scroll" id="collectbox">
+	<ul class="mui-table-view mui-table-view-chevron" id="messageList">	
+		<script type="text/html" id="messageLlistTpl">
+			{{# for(var i = 0, len = d.length; i < len; i++){ }}
+				<li class="mui-table-view-cell" article-type='{{ d[i].ChannelID }}' data-id='{{ d[i].ArticleID}}'>
+					<div class="mui-slider-right mui-disabled">
+						<a class="mui-btn mui-btn-red">删除</a>
+					</div>
+					<div class="mui-slider-handle newscon">
+						<h6><a href="#"><span></span>{{ d[i].Title }}</a></h6>
+					</div>
+					<span class="mui-icon mui-icon-forward jiantao"></span>
+				</li>
+			{{# } }}
+		</script>
+	</ul>
+</div>	
+</div>
+	
+	<script src="../js/mui.min.js"></script>
+	<script src="../js/ajax.js" ></script>
+	<script src="../js/jquery.min.js"></script>
+	<script type="text/javascript" src="../js/laytpl.js" ></script>
+ <script>
+	mui.init({
+		pullRefresh: {
+			container: '#pullrefresh',
+			down: {
+				callback: pulldownRefresh
+			},
+			up: {
+				contentrefresh: '正在加载...',
+				callback: pullupRefresh
+			},
+			beforeback: function(){
+					//释放内存
+					 token=null;
+					 user=null;
+					 page = null;
+					 transtime = null;
+					 messagetpl = null;
+					 table = null;
+					//返回true，继续页面关闭逻辑
+					return true;
+				}
+		}
+	});
+	var token=null;
+	var user=null;
+	var page = 1;
+	var transtime = getNowFormatDate();
+	var messagetpl = document.getElementById('messageLlistTpl').innerHTML;
+	var table = document.getElementById("collectbox");
+	mui.plusReady(function(){
+		user=plus.storage.getItem('memberdata');
+		var userdata=JSON.parse(user);
+		token = userdata.token;
+		getMessageList(1);
+		
+		mui('#messageList').on('tap','li',function() {
+			var channelID = this.getAttribute('article-type');
+			var articleID = this.getAttribute('data-id');
+			var url = ajax_articleDetailURL;
+			var currentData = getNowFormatDate();
+			mui.openWindow({
+				id: 'user_cllection_detail',
+				url: 'user_cllection_detail.html',
+				styles: {
+					top: 0,
+					bottom: 0,
+					bounce: 'none',
+					popGesture: 'close'
+				},
+				 extras:{
+				 	pageurl:url,
+				 	usertoken:token,
+				 	transtime:currentData,
+				 	pagechannelid:channelID,
+				 	pagearticleid:articleID,
+				 },
+				 waiting:{
+				 	autoShow:false,
+				 },
+				createNew:false,//是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+			});
+		});
+		
+	});
+	
+	(function($) {				
+			//第一个demo，拖拽后显示操作图标，点击操作图标删除元素；
+			$('#messageList').on('tap', '.mui-btn', function(event) {
+				var elem = this;
+				var li = elem.parentNode.parentNode;
+				mui.confirm('确认删除该条收藏吗？', function(e) {
+					if (e.index == 0) {
+						setTimeout(function() {
+							$.swipeoutClose(li);
+						}, 0);
+					} else {
+						li.parentNode.removeChild(li);
+						var articleID = li.getAttribute('data-id');
+						deledataFarivoteListLi(articleID);
+					}
+				});
+			});
+			
+		})(mui);
+	
+	/**
+	 * 下拉刷新具体业务实现
+	 */
+	function pulldownRefresh() {
+		setTimeout(function() {
+			getMessageList(1);
+			page = 1;
+			mui('#pullrefresh').pullRefresh().endPulldownToRefresh(); //refresh completed
+		}, 1500);
+	}
+	var count = 0;
+	/**
+	 * 上拉加载具体业务实现
+	 */
+	function pullupRefresh() {
+		page++;
+		setTimeout(function() {
+			mui('#pullrefresh').pullRefresh().endPullupToRefresh(); 
+			getMessageList(page);
+		}, 1500);
+	}
+	if (mui.os.plus) {
+		mui.plusReady(function() {
+			setTimeout(function() {
+				mui('#pullrefresh').pullRefresh().pullupLoading();
+			}, 1000);
+
+		});
+	} else {
+		mui.ready(function() {
+			mui('#pullrefresh').pullRefresh().pullupLoading();
+		});
+	}
+	//获取数据
+	function getMessageList(pageIndex){
+		mui.ajax(ajax_collectionListURL,{
+			data:{
+				token:token,
+				transtime:transtime,
+				pageIndex:pageIndex,
+			},
+			dataType:'json',
+			type:'post',
+			timeout:10000,
+			success:function(data){
+				data = JSON.parse(data);
+				if (data.result == 1 && data.Favorite.length != 0){
+					if (pageIndex == 1){
+						laytpl(messagetpl).render(data.Favorite,function(h){		
+							document.getElementById('messageList').innerHTML = h;
+						});
+					}else {
+						var table = document.body.querySelector('.mui-table-view');
+						var d = data.Favorite
+						for (var i = 0, len = d.length; i < len; i++) {
+							var li = document.createElement('li');
+							li.className = 'mui-table-view-cell';
+							li.setAttribute('data-id',d[i].ArticleID);
+							li.setAttribute('article-type',d[i].ChannelID);
+							li.innerHTML = '<div class="mui-slider-right mui-disabled"><a class="mui-btn mui-btn-red">删除</a></div>'+
+							'<div class="mui-slider-handle newscon"><h6><a href="#"><span></span>'+d[i].Title +
+							'</a></h6></div>' + '<span class="mui-icon mui-icon-forward jiantao"></span>';
+							table.appendChild(li);
+						}
+					
+					}
+				}
+			},
+			error:function(xhr,type,errorThrown){
+				//异常处理；
+				mui.toast("请求出错");
+			}
+		});
+	}
+	function deledataFarivoteListLi(articleID) {
+		mui.ajax(ajax_cancelCollectionURl,{
+			data:{
+				token:token,
+				transtime:transtime,
+				ArticleID:articleID,
+			},
+			dataType:'json',
+			type:'post',
+			timeout:10000,
+			success:function(data){
+				data = JSON.parse(data);
+				if (data.result == 1){
+					mui.toast('删除成功');
+				}
+			},
+			error:function(xhr,type,errorThrown){
+				//异常处理；
+				mui.toast("请求出错");
+			}
+		});
+	}
+			
+</script>
+</body>
+</html>

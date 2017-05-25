@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>设置中心</title>
+    
+    <link href="../css/mui.min.css" rel="stylesheet"/>
+    <style>
+		.title{
+			margin: 20px 0px 7px;
+			color: #000;
+			font-size: 17px;
+			background-color: #fff;
+		}
+		#setting_list div.mui-table-view-cell:after { left: 0px;}
+		#setting_list div.mui-table-view-cell:before {
+    position: absolute;
+    right: 0;
+    top: 0;
+    left: 0px;
+    height: 1px;
+    content: '';
+    -webkit-transform: scaleY(.5);
+    transform: scaleY(.5);
+    background-color: #c8c7cc;
+}
+		.powered{
+			bottom: 0; 
+			position: absolute; 
+			text-align: center; 
+			width: 100%; 
+			padding-bottom:0.5rem;
+			font-size: 0.6rem; 
+			color: #aaa; 
+			line-height: 1rem;
+		}
+		.title{
+				margin: 20px 15px 7px;
+				color: #6d6d72;
+				font-size: 15px;
+			}
+	</style>
+</head>
+<body>	
+	<div class="mui-content" id="setting_list">
+		<!--<div class="mui-table-view-cell title" id="titleswitch">消息推送设置
+			<div id="M_Toggle" class="mui-switch mui-switch-mini mui-active">
+                    <div class="mui-switch-handle"></div>
+            </div>
+		</div>-->
+		<ul class="mui-table-view">
+			 <li class="mui-table-view-cell">最新资讯推送
+			 	<div id="toggleNews" class="mui-switch mui-switch-mini mui-active">
+                    <div class="mui-switch-handle"></div>
+                </div>
+			 </li>
+	         <li class="mui-table-view-cell">时间信息推送
+	         	<div id="toggleTime" class="mui-switch mui-switch-mini mui-active">
+                    <div class="mui-switch-handle"></div>
+                </div>
+	         </li>
+	         <li class="mui-table-view-cell">价格预警信息推送
+	         	<div id="toggleCase" class="mui-switch mui-switch-mini mui-active">
+                    <div class="mui-switch-handle"></div>
+                </div>
+	         </li>
+		</ul>
+		
+		<nav class="powered" onclick="mui.toast('欢迎来到易联招采APP');">易联招采APP <span id="curvar"></span><br> &copy; 2016</nav>
+	</div>
+	
+	<script src="../js/jquery-1.11.1.min.js"></script>
+	<script src="../js/mui.min.js"></script>
+	<script src="../js/ajax.js"></script>
+	<script type="text/javascript" charset="UTF-8">
+      	mui.init({
+      		swipeBack: true, //右滑功能
+      		keyEventBind: {
+				backbutton: false  //关闭back按键监听
+			}
+      	});
+      	var version=null;
+      	var token=null;
+		var user=null;
+		var transtime = getNowFormatDate();
+      	mui.plusReady(function() {
+      		user = judgeLogin();
+			token = user.token;
+      		//获取缓存大小
+//    		plus.cache.calculate(function(size) {
+////    			console.log(size);
+//				size = size/1024/1024;
+//				size = size.toFixed(2);
+//				//获取到缓存大小，写入指定span
+//				var hcshu = document.getElementById("hcshu");
+//				hcshu.innerHTML = size + "MB";
+//    		});
+      		version = plus.runtime.version;
+      		document.getElementById("curvar").innerHTML = version;
+      		
+      		mui("#setting_list").on('tap','li',function() {
+      			var page = this.getAttribute("id");
+//    			if (page == "huancun"){
+//    				huancun();
+//    			}
+      		});
+      		
+      		document.getElementById("toggleNews").addEventListener('toggle', function(e) {
+				if (e.detail.isActive) {
+					setPushMessage(0,1)
+				} else {
+					setPushMessage(0,0)
+				}
+			});
+      		document.getElementById("toggleTime").addEventListener('toggle', function(e) {
+				if (e.detail.isActive) {
+					setPushMessage(1,1)
+				} else {
+					setPushMessage(1,0)
+				}
+			});
+			document.getElementById("toggleCase").addEventListener('toggle', function(e) {
+				if (e.detail.isActive) {
+					setPushMessage(2,1)
+				} else {
+					setPushMessage(2,0)
+				}
+			});
+      	});
+      	//清除缓存
+//		function huancun(){
+//			plus.cache.clear( function () {
+//				//重新获取缓存大小
+//				 var hcshu = document.getElementById("hcshu");
+//				 hcshu.innerHTML = "0.00MB";
+//	          	 mui.toast('缓存清除成功！');
+//	        });
+//		}
+		
+		function setPushMessage(msgType,appValues) {
+			mui.post(ajax_pushURL,{
+					transtime:transtime,
+					token:token,
+					MsgType:msgType,
+					AppValues:appValues
+				},function(data){
+					data = JSON.parse(data);
+					if (data.result == 1){
+						mui.toast(data.message);
+					}
+					
+				},'json'
+			);
+		}
+		
+    </script>
+    <script>
+		//显示隐藏推送功能
+//			mui('.mui-content #titleswitch').each(function() { 
+//				this.addEventListener('toggle', function(event) {
+//					if(event.detail.isActive){
+//					$("#setting_list ul").eq(0).show();
+//					}
+//					else{$("#setting_list ul").eq(0).hide();}
+//				});
+//			});
+		</script>
+    
+</body>
+</html>

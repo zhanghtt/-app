@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>个人信息</title>
+    
+    <link href="../css/mui.min.css" rel="stylesheet"/>
+    <link href="../css/mystyle.css" rel="stylesheet" />
+    <link href="../css/mui.picker.css" rel="stylesheet"/>
+    <link href="../css/mui.poppicker.css" rel="stylesheet"/>
+    <link href="../css/mui.picker.min.css" rel="stylesheet"/ />
+    <link href="../css/user_info.css" rel="stylesheet" />
+    <style>
+    	.user_subminbox { margin: 10px 15px 10px; }
+    	.user_subminbox button { display: block;width: 100%; height: 46px; margin: 0px auto; padding: 0px; text-align: center;  font-size: 18px;color: #fff; background-color: #0070bc;}
+    	#con_company { display: inline-block;  max-width: 163px; height: 52px; margin: 0px; line-height: 24px; text-indent: 0px; text-indent: 0px; padding: 8px 0px 0px; border: none;}
+    #avatarEdit {font-size: 20px;color: #f60;}
+    </style>
+    
+</head>
+<body>
+	<div class="mui-content" id="user_infor">
+		<div class="userAvatar">
+			<img id="headerImg" src="../images/avatar.jpg" />
+			<!--<div id="avatarEdit"></div>-->
+		</div>	
+		<ul class="mui-table-view">
+			<li id="li_name">
+				<div class="mui-input-row">
+					<span>用户名</span><input type="text" id="con_name" class="mui-input-clear"/>
+				</div>				
+			</li>
+			<!--<li id="li_tel">
+				<div>
+					<span>手机号</span><span id="con_tel">18612345678</span>
+				</div>
+			</li>-->
+			<li id="li_company" style="height: auto; padding-bottom: 0px;">
+				<div class="mui-input-row" style="height: auto;">
+					<span style="float: left;">公司名称</span><textarea type="text" id="con_company" class="mui-input-clear" placeholder=""></textarea>
+				</div>
+			</li>
+			<li id="li_start">
+				<div>
+					<span>开始使用时间</span><span class="con_start contracttime "  id="con_startime"></span>
+				</div>
+			</li>
+			<li id="li_end">
+				<div>
+					<span>截止使用时间</span><span class="con_end contracttime"   id="con_endtime"></span>
+				</div>
+			</li>
+			<li id="li_address">
+				<div>
+					<span>所在地</span><span id="con_address"></span><span class="mui-icon mui-icon-forward"></span>
+				</div>
+			</li>
+			<!--<li id="li_level">
+				<div>
+					<span>会员等级</span><span id="con_level">1</span>
+				</div>
+			</li>-->
+			<li style="height: auto; padding: 5px 0px;">
+				<div class="user_subminbox"><button class="mui-btn mui-btn-block mui-btn-primary" id="configUser">完成</button></div>
+			</li>
+		</ul>
+	</div>
+	
+	
+	
+	<script src="../js/mui.min.js"></script>
+
+	<script src="../js/jquery.min.js"></script>
+	<script src="../js/common.js"></script>
+	<script src="../js/mui.picker.min.js"></script>
+	<script src="../js/mui.poppicker.js"></script>
+	<script src="../js/city.data-3.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../js/ajax.js"></script>
+	<script src="../js/appUpload.js"></script>
+	<script src="../js/lrz.mobile.min.js"></script>
+	<script type="text/javascript" charset="UTF-8">
+mui.init(
+	{
+		beforeback: function(){
+					//释放内存
+					headerImg.src = '';
+					 token=null;
+					 user=null;
+					 userdata=null;
+					 transtime = null;
+					 ms=null;
+					 h=null;
+					//返回true，继续页面关闭逻辑
+					return true;
+				}
+	}
+);
+var token=null;
+var user=null;
+var userdata=null;
+var transtime = getNowFormatDate();
+var ms=null;
+var h=null;
+var headerImg  =document.getElementById("headerImg");
+var con_name = document.getElementById("con_name")
+mui.plusReady(function() {
+	user = judgeLogin();
+	h=plus.webview.getWebviewById( plus.runtime.appid );//获取应用入口页面的方法
+	//更新个人消息；
+	updateUserInfo(user);
+	token = user.token;
+	ms = plus.webview.getWebviewById('pages/user.html');
+	if (user.headimg){
+		headerImg.src = host + user.headimg;
+	}
+	//修改个人信息
+	document.getElementById("configUser").addEventListener('tap',function() {
+		var companyName = document.getElementById("con_company").value;
+		var address = document.getElementById("con_address").innerHTML;
+		var id = con_name.value;
+//		if(id!=''){
+//			if((id.length<6||id.length>8)){
+//				mui.toast('登录名长度需要在6到8位之间');
+//				return;
+//			}
+//			var Regx = /^[A-Za-z]$/;
+//			if(!Regx.test(id[0])){
+//				mui.toast('登录名必须以字母开头');
+//				return;
+//			}
+//		}
+		if (companyName == '') {
+			companyName = user.company;
+		}
+		mui.ajax(ajax_modMemberURL,{
+			data:{
+				MemberType:1,
+				token:token,
+				transtime:transtime,
+				CompanyName:companyName,
+				Address:address,
+				UserName:id,
+				//id:id,
+			},
+			dataType:'json',
+			type:'post',
+			timeout:10000,
+			success:function(data){
+				data = JSON.parse(data);
+				mui.toast(data.message);
+				if (data.result == 1){
+					console.log('修改个人信息成功');
+					document.getElementById("con_address").innerHTML = address;
+					document.getElementById("con_company").setAttribute('placeholder',companyName);
+					mui.fire(ms,'getUserInfoFromServer',{
+									
+					});
+				}
+			},
+			error:function(xhr,type,errorThrown){
+				//异常处理；
+				console.log(JSON.stringify(xhr));
+				mui.toast("请求出错");
+			}
+		});
+});
+	//头像上传选择
+	mui('body').on('tap', '.userAvatar',function() {
+		
+		appupload.init(function(data) {
+			lrz(data.dst,{
+				width: 500,
+				done: function(rs) {
+					var url = ajax_uploadHeadImgURl;
+					plus.nativeUI.showWaiting('', {
+						padlock: true
+					});
+					mui.ajax(url,{
+						data:{
+							token:token,
+							transtime:transtime,
+							Img:rs.base64
+						},
+						dataType:'json',
+						type:'post',
+						timeout:20000,
+						success:function(data){
+							plus.nativeUI.closeWaiting();
+							console.log("information:",data)
+							data = JSON.parse(data);
+							if (data.result == 1) {
+								document.getElementById("headerImg").src = host + data.url
+								//保存信息
+								user.headimg = data.url;
+								var memberdata=JSON.stringify(user);
+								plus.storage.setItem('memberdata',user);
+								mui.fire(h,'changeHeadImgIndex',{
+									
+								});
+								mui.toast('上传成功');
+							}
+							
+						},
+						error:function(xhr,type,errorThrown){
+							//异常处理；
+							console.log(xhr);
+							console.log(type);
+							console.log(errorThrown);
+							plus.nativeUI.closeWaiting();
+						}
+					});
+				}
+			});
+		
+		});
+	});
+	
+	function updateUserInfo(data) {
+		if(data.name!=undefined){
+			con_name.value = data.name
+			//con_name.setAttribute('disabled',"true")
+		}
+		if(data.company)
+		{document.getElementById("con_company").setAttribute('placeholder',data.company);}
+		else{
+			document.getElementById("con_company").innerHTML = '';
+		}
+		if (data.starttime){
+			document.getElementById("con_startime").innerHTML = data.starttime;
+		}else {
+			document.getElementById("con_startime").innerHTML = '';
+		}
+		if (data.endtime){
+			document.getElementById("con_endtime").innerHTML = data.endtime;
+		}else {
+			document.getElementById("con_endtime").innerHTML = '';
+		}
+		if (data.address) {
+			document.getElementById("con_address").innerHTML = data.address;
+		}else{
+			document.getElementById("con_address").innerHTML ='点击选择城市';
+		}
+		if (data.headimg) {
+			document.getElementById("headerImg").src = host + data.headimg;
+		}
+//		if(data.alias){
+//			document.getElementById("avatarEdit").innerHTML =data.alias;
+//		}
+	}
+	
+});
+      	
+    </script>
+    
+		<script>
+		//选择所在地
+			(function($, doc) {
+				$.ready(function() {	
+					//级联示例
+					var cityPicker3 = new $.PopPicker({
+						layer: 3
+					});
+					cityPicker3.setData(cityData3);
+					var showCityPickerButton = doc.getElementById('li_address');
+					//var cityResult3 = doc.getElementById('cityResult3');
+					var resultspan = doc.getElementById('con_address');					
+					showCityPickerButton.addEventListener('tap', function(event) {
+						cityPicker3.show(function(items) {
+							resultspan.innerText = (items[0] || {}).text + " " + (items[1] || {}).text + " " + (items[2] || {}).text;
+							//返回 false 可以阻止选择框的关闭
+							//return false;
+						});
+					}, false);
+				});
+			})(mui, document);
+		</script>
+</body>
+</html>

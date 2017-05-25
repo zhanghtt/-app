@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <title>用户登录</title>
+    
+    <link href="../css/mui.min.css" rel="stylesheet"/>
+    <link href="../css/mystyle.css" rel="stylesheet"/>
+    <style>
+    	header.mui-bar-nav { webkit-box-shadow:none;box-shadow:none; background-color: transparent;}
+		header.mui-bar-nav .mui-title { display: none;}
+		.mui-bar-nav a { color: #fff;}
+    		.input {
+    			padding: 5px;
+    		}
+		#userloginbox .mui-card {
+			padding: 0px; background: transparent; border: none;
+			
+		}
+		.mui-btn-block {
+			padding: 10px;
+			margin: 20px auto 40px auto;
+			clear: both;
+			overflow: hidden;
+		}
+		#userloginbox .pwddiv { position: relative;}
+		#userloginbox .pwddiv > input {
+				border: none;
+				margin: 0px;
+				font-size: 16px;
+				padding: 15px 15px 15px 32px !important;
+				border-radius: 0px;
+				height: auto;
+				border-bottom: 1px solid #cce5f3;
+				color: #fff;
+				background-color: transparent;
+		}
+			#userloginbox input { color: #f00;}
+			.pwddiv input::-webkit-input-placeholder { color: #6cbee3;}
+			
+			body { background: #0074be url(../images/findpswbg.png) center top no-repeat; background-size: 100%;}
+			.findpwdicon { text-align: center; margin: 60px auto 40px;}
+			.findpwdicon > div {background-color: #fff; width: 100px; height: 90px; padding-top: 6px; margin: 0px auto; text-align: center; border-radius:20px;}
+			.findpwdicon div span { color: #00ace0;font-size: 56px; font-weight: bold;}
+			.findpwdicon div p { color: #00ace0;ine-height: 30px; font-size: 18px; }
+			#account { background: transparent url(../images/find_phone.png) left center no-repeat;background-size: 25px;}
+			#password { background:url(../images/find_check.png) left center no-repeat;background-size: 25px;}			
+			#get_checkcode {position:absolute;top: 64px;right: 1px;}
+			#get_checkcode button { display: inline-block; width: 5em; padding: 0px; height: 24px; line-height: 24px; font-size: 15px;
+			background-color: transparent; border:none;}
+	    	#login { display: block; width: 100%; color: #0072bd;  background-image:linear-gradient(to top left,#cac9c9,#fff); border:none;}
+	    	#userloginbox { width: 78%; margin: 0px auto; position: relative; background-color: transparent;}
+	    	#userloginbox .mui-card { margin: 0px; padding: 0px;}
+	    	#loginPostbox { margin: 0px; padding: 0px; }
+	    	#loginPostbox #login{ display: block; margin:22px 0px 0px; padding: 0px; height: 46px; line-height: 46px; font-size: 18px; }
+			#userloginbox .pwddiv #loginforpwd { z-index: 10; width: 90px; height: 40px; position: absolute; top: 0px; right:-33px; padding: 0px;}
+			#userloginbox .pwddiv #loginforpwd:after, #userloginbox .mui-input-row::after { height: 0px;}
+			#userloginbox .mui-table-view { background: transparent;}
+			#userloginbox .mui-input-group .mui-input-row { height: auto;}
+			#userloginbox p { padding: 0px; margin: 16px 0px 0px;}
+			#userloginbox p .mui-btn-link { display:block; color: #fff; text-align:right;  padding: 0px; margin: 0px; font-size: 15px;}
+   			#userloginbox p button:nth-last-child(2) { float: right;width:5em; }
+   
+    </style>
+</head>
+<body>
+	<div class="findpwdicon">
+			<div>
+				<span class="mui-icon mui-icon-person"></span>
+				<p>用户登录</p>
+			</div>
+	</div>
+	
+	<div class="mui-content" id="userloginbox">
+		<div class="mui-card">
+			<div class="mui-input-group mui-table-view">
+				<div class="mui-input-row pwddiv">
+					<input type="text" class="input mui-input-clear " autocomplete="off"  id='account' placeholder="请输入手机号" />
+				</div>
+				<div class="mui-input-row pwddiv">
+					<input type="password" id='password' class="mui-input-clear input" autocomplete="off" placeholder="请输入密码" />
+					<div class="mui-table-view-cell" id="loginforpwd">
+						<span></span>
+						<div class="mui-switch mui-switch-green mui-switch-mini">
+							<div class="mui-switch-handle"></div>
+						</div>
+					</div>
+				</div>
+				<div class="mui-button-row" id="loginPostbox">
+					<button type="button" class="mui-btn mui-btn-block mui-btn-primary" id='login'>登录</button>
+				</div>
+			</div>
+		</div>
+		<p>
+			<button class="mui-btn mui-btn-link" id='reg'>新用户注册</button>
+			<button class="mui-btn mui-btn-link" id='forgetPassword'>忘记密码</button>
+		</p>
+	</div>
+	<script src="../js/mui.min.js"></script>	
+	<script src="../js/ajax.js" type="text/javascript"></script>
+	<script src="../js/app.js"></script>
+	<script src="../js/jquery-1.11.1.min.js"></script>
+	<script src="../js/core.js"></script>
+    <script src="../js/enc-base64.js"></script>
+	<script>
+	    var me=null;
+		var base_page = null;
+		var phoneType=null;
+		var news = null,analysis = null;
+		var ms = null;
+		mui.init({
+	      		swipeBack: true,
+	      		beforeback: function(){
+					//释放内存
+					document.body.style.backgroundImage=null;
+					
+					base_page = null;
+					loginButton = null,accountBox = null,passwordBox = null;
+					regButton = null,forgetButton = null,transTime = null;
+					phoneType = null;
+					user = null;
+//					plus.webview.close(me);
+					me = null;
+					//返回true，继续页面关闭逻辑
+					return true;
+				}
+	      	});
+	      	
+	      	var loginButton = document.getElementById('login');
+			var accountBox = document.getElementById('account');
+			var passwordBox = document.getElementById('password');
+			var regButton = document.getElementById('reg');
+			var forgetButton = document.getElementById('forgetPassword');	
+			var transTime = getNowFormatDate();
+			var user={};
+		mui.plusReady(function() {
+			me = plus.webview.currentWebview();
+			
+//				ms = me.opener();
+			telephoneNumbefDefault();//写上默认的电话号码
+			ms = plus.webview.getWebviewById('pages/user.html');
+			news = plus.webview.getWebviewById("pages/news.html")
+				analysis = plus.webview.getWebviewById("pages/analysis.html")
+			base_page = plus.webview.getWebviewById("base_page.html");
+			//timeindex = plus.webview.getWebviewById("pages/timeindex.html");
+			plus.screen.lockOrientation("portrait-primary");
+			regButton.addEventListener('tap',function(){
+				openpage("login_register.html");
+//				openpage("register.html");
+			});
+			forgetButton.addEventListener('tap',function(){
+				openpage("findpwd.html");
+			});
+			//登陆,成功之后存储个人Token，字段名为memberdata ，user的json字符串
+			loginButton.addEventListener('tap', function(event) {
+				if (mui.os.android){
+					phoneType = 'Android';
+				}else{
+					phoneType = 'IOS';
+				}
+				var info = plus.push.getClientInfo();
+				var str=CryptoJS.enc.Utf8.parse(passwordBox.value);
+				var base64=CryptoJS.enc.Base64.stringify(str);
+				var data_form = {
+						transtime:transTime,
+						UserID: accountBox.value,
+						Password: base64,
+						ClientID: info.clientid,
+						IOSToken: info.token,
+						PhoneType:phoneType
+				};
+				console.log("data_form:",JSON.stringify(data_form));
+				mui.post(ajax_loginURL,data_form,function(data_){
+					console.log('back:',data_)
+						info = null,str = null,base64 = null;
+						data = JSON.parse(data_);
+						data_ = null;info = null,str = null,base64 = null;
+						data_form = null;
+						
+						if  (data.result == 1){
+							user.token = data.Token;
+							user.phoneNumber =""+ accountBox.value;
+							var memberdata=JSON.stringify(user);
+							plus.storage.setItem('memberdata',memberdata);
+							plus.storage.setItem('phoneNumber',accountBox.value);
+							
+							news.reload(false);
+							
+							memberdata = null;
+							accountBox = null;
+							plus.nativeUI.toast("登录成功");
+							
+							analysis.reload(false);
+							
+							mui.fire(ms,'getUserInfoFromServer',{});
+							if(base_page!=null){
+								mui.fire(base_page,'refresh_content',{});
+							}
+							mui.back();
+//								
+						}else {
+							mui.toast(data.message);
+						}
+					},'json'
+				);
+			});
+			
+		});
+	//密码显示功能
+			mui('.mui-content .mui-switch')[0].addEventListener('toggle', function(event) {
+					//event.detail.isActive 可直接获取当前状态
+					if(event.detail.isActive){ 
+						//$("#password").attr("type","text");
+						passwordBox.setAttribute("type","text")
+					}
+					else{
+						//$("#password").attr("type","password");
+						passwordBox.setAttribute("type","password")
+						}
+			});	
+	function telephoneNumbefDefault() {
+		var telephone =  plus.storage.getItem('phoneNumber');
+		if (telephone){
+			accountBox.value = telephone;
+		}
+		telephone = null;
+	}
+	
+		
+	function toMain(){
+			ms.evalJS("getuser(1)");
+		}
+		
+		</script>
+	
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <link href="../css/mui.min.css" rel="stylesheet"/>
+    <link href="../css/zssg.css" rel="stylesheet"/>
+    <script type="text/javascript" src="../js/share.js" ></script>
+    <style>
+        body{height:245px; overflow: hidden;}
+        p.title{line-height: 30px; padding-left: 20px; padding-top: 20px;}
+    	li{display: inline-block; width: 23.9%; font-size:12px; height: 65px; margin: 0; padding: 0; text-align: center;}
+    	li.line{width:100%; height: 1px; background: #DDDDDD; margin: 0px;}
+    	li p{margin-top:10px;}
+    	li p img{padding:7px; background: #ffffff; width: 50px; -moz-border-radius: 10px;-webkit-border-radius: 10px;border-radius: 10px;}
+        li p span.iconfont {
+          background: #ffffff none repeat scroll 0 0;
+          border-radius: 10px;
+          color: #000;
+          display: block;
+          font-size: 1.8em;
+          height: 2em;
+          line-height: 2em;
+          margin: 0 auto;
+          transition: font-size 0.25s ease-out 0s;
+          width: 2em;
+      }
+      .mui-icon{font-size: 36px;}
+      .mui-icon-weixin{color:#3EA20C; }
+      .mui-icon-pengyouquan{color:#3EB135}
+      .mui-icon-qq{color: #5397DE;}
+      .mui-icon-weibo{color:red;}
+      .cancel{background: #ffffff; line-height: 48px; text-align: center;font-size: 16px;}
+    </style>
+</head>
+<body>
+<div class="mui-content">
+	<ul style="margin:0; padding: 15px 10px 0;">
+           <li onclick="shareAction('weixin','WXSceneSession');">
+	          <p><span class="mui-icon mui-icon-weixin"></span></p>
+	                       微信
+	       </li>
+	       <li onclick="shareAction('weixin','WXSceneTimeline');">
+	          <p><span class="mui-icon mui-icon-pengyouquan"></span></p>
+	                       朋友圈
+	       </li>
+	       <li onclick="shareAction('qq');"> 
+	         <p><span class="mui-icon mui-icon-qq"></span></p>
+	          QQ
+	       </li>
+	     <li onclick="shareAction('sinaweibo');"> 
+	         <p><span class="mui-icon mui-icon-weibo"></span></p>
+	                 微博
+	       </li>
+	       <li class="line"></li>
+	</ul>
+	<ul style="margin:0; padding: 15px 10px;">
+		 <li><a href="" style="color:#000000"  id="sendmsg">
+	          <p><span class="mui-icon mui-icon-email"></span></p>
+	                      短信分享</a>
+	      </li>
+		<li id="liulanqi">
+			<p><span class="mui-icon mui-icon-upload"></span></p>
+			浏览器打开
+		</li>
+		<li id="fuzhi">
+			<p><span class="mui-icon mui-icon-chatboxes"></span></p>
+			复制链接
+		</li>
+		<li id="shuaxin">
+			<p><span class="mui-icon mui-icon-refresh"></span></p>
+			刷新
+		</li>
+		<!-- <li id="shoucang">
+	          <p><span class="iconfont icon-wenbenshuru"></span></p>
+	                      收藏
+	       </li>-->
+	</ul>
+</div>
+<div class="cancel" id="cancel">
+	取消
+</div>
+<script src="../js/mui.min.js"></script>
+<script src="../js/mui.h5.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+	var shares=null,bhref=false;
+    var Intent=null,File=null,Uri=null,main=null;
+	mui.init({
+		 beforeback: function(){
+							//释放内存
+							 ms=null;
+						     me=null;
+							 title=null,share_thumb=null,description=null;
+							 pageurl=null;
+							 shorturl=null;
+			    				 document.body.innerHTML = '';
+							//返回true，继续页面关闭逻辑
+							return true;
+						}
+	});
+	var ms;
+	var me;
+	var title,share_thumb="http://oss.zssg.net/appres/logo.png",description="分享自掌上寿光";
+	var pageurl;
+	var shorturl;
+	mui.plusReady(function() {
+		me = plus.webview.currentWebview();
+		ms = me.opener();
+		updateSerivces();
+		title=me.title;
+		if(me.description)
+		description=me.description;
+		if(me.share_thumb)
+		share_thumb = me.share_thumb;
+		pageurl=me.url;
+		if (pageurl.match("app")) {
+			pageurl = pageurl.replace(/app/, "")
+		}
+		console.log(ms.getURL());
+		//sms:?body=短信内容,sendmsg
+		//获取短网址
+		var longurl = 'http://api.zssg.net/io/dwz?type=sina&url='+pageurl;
+		console.log(longurl);
+		mui.getJSON(longurl,function (response) {
+			shorturl=response.tinyurl;
+			console.log(shorturl);
+			if(mui.os.ios){
+				document.getElementById("sendmsg").href="sms:";
+			}
+			else
+			{
+				document.getElementById("sendmsg").href="sms:?body=【"+title+"】"+shorturl+" — FROM 掌上寿光";
+			}
+		});
+	});
+	document.getElementById("cancel").addEventListener('tap', function() {
+		mui.back();
+	});
+	document.getElementById("liulanqi").addEventListener('tap', function() {
+		ms.evalJS("smsTest()");
+		mui.back();
+	});
+	document.getElementById("fuzhi").addEventListener('tap', function() {
+		ms.evalJS("copyToClip()");
+		mui.back();
+	});
+	document.getElementById("shuaxin").addEventListener('tap', function() {
+		ms.evalJS("pagereload()");
+		mui.back();
+	});
+
+</script>
+</body>
+</html>

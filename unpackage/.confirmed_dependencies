@@ -1,1 +1,210 @@
-null
+{
+  "pages/user.html": {
+    "resources": [
+      "js/app.js",
+      "images/personal_icon_web_notice@3x.png",
+      "icon/icon.png",
+      "images/personal_bg@2x.jpg",
+      "images/personal_icon_password_find@3x.png",
+      "images/personal_icon_news_set@3x.png",
+      "images/personal_icon_news_collection@3x.png",
+      "images/personal_icon_news@3x.png",
+      "images/avatar.jpg"
+    ],
+    "refer": [
+      "pages/windows.html"
+    ]
+  },
+  "pages/analysis.html": {
+    "resources": [
+      "js/g/analysisUtils.js",
+      "fonts/mui.ttf",
+      "js/g/dropload.min.js",
+      "js/g/swiper.min.css",
+      "js/laytpl.js",
+      "js/jquery.min.js",
+      "js/g/newspp.css",
+      "js/g/news.css",
+      "js/mui.min.js",
+      "js/params.js",
+      "js/g/dropload.css",
+      "js/g/swiper.jquery.min.js",
+      "css/mui.min.css",
+      "js/ajax.js"
+    ],
+    "refer": [
+      "pages/base_page.html"
+    ]
+  },
+  "index.html": {
+    "resources": [
+      "js/index/index-old.js",
+      "js/requirejs/require-2.1.11.js",
+      "fonts/mui.ttf",
+      "js/index/appVersionUpdate.js",
+      "images/qidongye.png",
+      "images/avatar.jpg",
+      "js/index/index.js",
+      "js/g/publicImg_base64/public_img.js",
+      "images/nav_icon_news@2x.png",
+      "js/mui.min.js",
+      "images/nav_img_head@2x.png",
+      "js/aesdata.js",
+      "css/iconfont.css",
+      "css/swiper.min.css",
+      "css/mui.min.css",
+      "js/ajax.js",
+      "fonts/iconfont.ttf",
+      "js/index.js",
+      "css/zssg.css"
+    ],
+    "refer": [
+      "pages/user.html",
+      "pages/analysis.html",
+      "pages/guide.html",
+      "pages/timeindex.html",
+      "pages/news.html"
+    ]
+  },
+  "pages/guide.html": {
+    "resources": [
+      "img/001.png",
+      "js/g/guideImg_base64/base_64_img.js"
+    ],
+    "refer": []
+  },
+  "pages/timeindex.html": {
+    "resources": [
+      "js/mui.pullToRefresh.js",
+      "images/timeicon03.png",
+      "images/timeicon02.png",
+      "js/mui.pullToRefresh.material.js",
+      "images/share04.gif",
+      "images/share03.gif",
+      "images/flag.png",
+      "js/jquery-1.11.1.min.js",
+      "images/share02.gif",
+      "images/share05.gif",
+      "js/share.js",
+      "images/timeicon04.png",
+      "images/timeicon01.png"
+    ],
+    "refer": []
+  },
+  "pages/news.html": {
+    "resources": [
+      "js/g/dropload.min.js",
+      "js/g/swiper.min.css",
+      "js/laytpl.js",
+      "js/jquery.min.js",
+      "js/g/newspp.css",
+      "js/g/news.css",
+      "js/mui.min.js",
+      "js/params.js",
+      "js/g/dropload.css",
+      "js/g/swiper.jquery.min.js",
+      "js/g/newsUtils.js",
+      "js/ajax.js",
+      "js/g/sgrbloding.png",
+      "fonts/mui.ttf",
+      "css/mui.min.css"
+    ],
+    "refer": [
+      "pages/base_page.html"
+    ]
+  },
+  "pages/login_standard.html": {
+    "resources": [
+      "js/enc-base64.js",
+      "images/find_check.png",
+      "images/findpswbg.png",
+      "js/core.js",
+      "images/find_phone.png",
+      "css/mystyle.css"
+    ],
+    "refer": []
+  },
+  "pages/windows.html": {
+    "resources": [
+      "pages/login_standard.html",
+      "images/load1.gif",
+      "css/common.css",
+      "js/immersed.js"
+    ],
+    "refer": [
+      "pages/login_standard.html",
+      "pages/web_notice.html",
+      "pages/user_info.html"
+    ]
+  },
+  "pages/base_page.html": {
+    "resources": [
+      "images/share01.gif",
+      "js/pinchzoom.min.js",
+      "js/mui.lazyload.js",
+      "js/mui.lazyload.img.js",
+      "js/laytpl.js",
+      "fonts/mui.ttf",
+      "images/share04.gif",
+      "images/share03.gif",
+      "js/enc-base64.js",
+      "images/share05.gif",
+      "images/share02.gif",
+      "js/mui.min.js",
+      "js/jquery-1.11.1.min.js",
+      "css/mui.min.css",
+      "js/share.js",
+      "js/ajax.js",
+      "js/core.js",
+      "css/zssg.css"
+    ],
+    "refer": [
+      "pages/windows.html"
+    ]
+  },
+  "pages/web_notice.html": {
+    "resources": [
+      "js/g/webnoticeUtils.js"
+    ],
+    "refer": [
+      "pages/web_notice_detail.html"
+    ]
+  },
+  "pages/web_notice_detail.html": {
+    "resources": [
+      "images/share01.gif",
+      "js/pinchzoom.min.js",
+      "js/laytpl.js",
+      "fonts/mui.ttf",
+      "js/mui.lazyload.js",
+      "images/share04.gif",
+      "images/share03.gif",
+      "js/mui.lazyload.img.js",
+      "js/enc-base64.js",
+      "images/share05.gif",
+      "images/share02.gif",
+      "js/mui.min.js",
+      "js/jquery-1.11.1.min.js",
+      "css/mui.min.css",
+      "js/share.js",
+      "js/ajax.js",
+      "js/core.js",
+      "css/zssg.css"
+    ],
+    "refer": []
+  },
+  "pages/user_info.html": {
+    "resources": [
+      "css/user_info.css",
+      "js/lrz.mobile.min.js",
+      "js/common.js",
+      "js/mui.picker.min.js",
+      "js/appUpload.js",
+      "js/mui.poppicker.js",
+      "css/mui.picker.min.css",
+      "css/mui.poppicker.css",
+      "css/mui.picker.css",
+      "js/city.data-3.js"
+    ]
+  }
+}

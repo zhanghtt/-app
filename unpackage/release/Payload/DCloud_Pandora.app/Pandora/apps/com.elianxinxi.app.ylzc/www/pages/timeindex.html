@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>时间安排</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="../css/mui.min.css">
+		<style>
+			html,
+			body {
+				background-color: #efeff4;
+			}
+			.mui-bar~.mui-content .mui-fullscreen {
+				top: 44px;
+				height: auto;
+			}
+			.mui-pull-top-tips {
+				position: absolute;
+				top: -20px;
+				left: 50%;
+				margin-left: -25px;
+				width: 40px;
+				height: 40px;
+				border-radius: 100%;
+				z-index: 1;
+			}
+			.mui-bar~.mui-pull-top-tips {
+				top: 24px;
+			}
+			.mui-pull-top-wrapper {
+				width: 42px;
+				height: 42px;
+				display: block;
+				text-align: center;
+				background-color: #efeff4;
+				border: 1px solid #ddd;
+				border-radius: 25px;
+				background-clip: padding-box;
+				box-shadow: 0 4px 10px #bbb;
+				overflow: hidden;
+			}
+			.mui-pull-top-tips.mui-transitioning {
+				-webkit-transition-duration: 200ms;
+				transition-duration: 200ms;
+			}
+			.mui-pull-top-tips .mui-pull-loading {
+				/*-webkit-backface-visibility: hidden;
+				-webkit-transition-duration: 400ms;
+				transition-duration: 400ms;*/
+				
+				margin: 0;
+			}
+			.mui-pull-top-wrapper .mui-icon,
+			.mui-pull-top-wrapper .mui-spinner {
+				margin-top: 7px;
+			}
+			.mui-pull-top-wrapper .mui-icon.mui-reverse {
+				/*-webkit-transform: rotate(180deg) translateZ(0);*/
+			}
+			.mui-pull-bottom-tips {
+				text-align: center;
+				background-color: #efeff4;
+				font-size: 15px;
+				line-height: 40px;
+				color: #777;
+			}
+			.mui-pull-top-canvas {
+				overflow: hidden;
+				background-color: #fafafa;
+				border-radius: 40px;
+				box-shadow: 0 4px 10px #bbb;
+				width: 40px;
+				height: 40px;
+				margin: 0 auto;
+			}
+			.mui-pull-top-canvas canvas {
+				width: 40px;
+			}
+			.mui-slider-indicator.mui-segmented-control {
+				background-color: #efeff4;
+			}
+			
+			/*潘潘*/
+	 body { padding-top: 120px; color: #333; }
+     p { color: #666; margin: 0px; padding: 0px;}
+     .ppinputdiv { position: absolute; width: 70%; left: 15%; top: 7px; height: 30px;}	
+     .ppinputdiv input { height: 30px; border: none; color: #333; font-size: 14px; padding: 0px 30px 0px 30px;}	
+     .ppinputdiv input::-webkit-input-placeholder { color: #999; font-size: 14px;}
+     .ppinputdiv #ppserchbtn { display: block; position: absolute; left: 0px; top: 0px; color: #000; width: 30px; height: 30px; text-align: center;
+      padding: 0px;margin: 0px; border: none;}
+     #ppserchpic {}
+     #ppserchpic img { width: 30px; margin-top: 7px;}
+	 .timeplay_tit div a.on {color: #fff;}
+	 .timeplay_tit div a>div { width: 88%; max-width: 100px; margin: 0px auto; padding: 7px 0px 5px; background-color: #aaa; border-radius: 20%; }
+	 .timeplay_tit div a.mui-active>div { background-color: #0070bc;}
+	 .timeplay_tit div a div img { display: block; width: 50%; margin: 0px auto;}
+	 .timeplay_tit div a p { color: #fff; line-height: 26px; padding: 0px 0px 0px; margin: 0px;}	 
+	 
+	 .timeplay_con { margin: 0px 0px 0px;}
+	 .timeplay_con ul { list-style: none; padding: 0px; margin: 0px; width: 100%;}
+	 .timeplay_con .con { display: none;}
+	 .timeplay_con ul li:nth-of-type(2n-1) { background-color: fff; padding: 15px 15px 15px;}
+	 .timeplay_con ul li:nth-of-type(2n) { background-color: #f4f4f4;}
+	 .timeplay_con ul li { border-bottom: 1px solid #ddd; position: relative;  padding-bottom: 15px;}
+	 .timeplay_con ul li .mui-slider-handle { background-color: transparent;}	 
+	 .leftcon { display: block; width: 100%; color: #333;}
+	 .leftconbox { position: relative; padding-bottom: 10px;}
+	 .leftconbox span.nowarn { position: absolute; display: inline-block; width: 5em; text-align: right; right: 15px; bottom: -8px; color: #f00;}
+	 .leftcon p {/*text-overflow:ellipsis; overflow:hidden; white-space:nowrap;*/  padding: 0px; margin: 0px; font-size: 15px; color: #333;}
+	 .leftcon div { position: relative; margin-bottom: 3px;}
+	 .leftcon div span { display: inline-block; /*width: 50%; */color: #666;}
+	 .leftcon div span:nth-of-type(1){ margin-right: 5px;}
+	 .leftcon div span:nth-of-type(2){ margin-left: 5px;}
+	 .timeplay_con .mui-table-view-cell:after { height: 0px;}
+	 .mui-icon .mui-badge { right: 1px; top: 5px; left: auto;}
+	 .header .mui-input-row sapn.mui-icon { color: #000; background-color: #f00;}
+	 #ppinputdiv .mui-input-clear~.mui-icon-clear {color: #000; top: -5px;}
+	 .mui-table-view-chevron .mui-table-view-cell { padding-right: 15px;}
+	 
+	    #picture { z-index: 999; }
+		#picture .shareul { background-color: #fff;}
+		#picture .shareul li { float: left; width: 33%; text-align: center;}
+		#picture .shareul li:after { height: 0px;}
+		#picture .shareul li div { margin: 0px auto 5px;}
+		#picture ul li div img { display: block; width: 70%; max-width: 100px; margin: 0px auto;}
+		#picture ul li p { color: #333; height: 24px; line-height: 24px;}
+		
+		/*修改它的样式*/
+		
+		.mui-segmented-control.mui-scroll-wrapper .mui-scroll{
+			width: 100%; overflow: hidden; zoom: 1;	height: auto;
+		}
+		.mui-segmented-control.mui-scroll-wrapper .mui-scroll .mui-control-item { 
+			float: left; width: 20%;
+			  padding: 0px 0px 8px;}		
+		.mui-segmented-control.mui-scroll-wrapper .mui-scroll .mui-control-item p { font-size: 12px;}		
+		.mui-fullscreen .mui-segmented-control~.mui-slider-group { top: 100px;}
+		/*.mui-segmented-control.mui-segmented-control-inverted .mui-control-item.mui-active { background-color: #fff;}*/
+		#sliderSegmentedControl { height: 75px; padding-top: 8px; margin: 0px; box-sizing: border-box; background-color: #fff;}
+		.mui-slider .mui-segmented-control.mui-segmented-control-inverted~.mui-slider-group .mui-slider-item { border: none;}
+		
+		 
+		.classify{
+			color: gray;
+			position: absolute;
+			right: 5px;
+		}
+		.actionbutton_container{
+						text-align: center;
+						margin: 0;
+						width: 100%; overflow: hidden; zoom: 1;
+					}
+					.actionbutton_container a{
+						font-size: 14px;
+						float: left; width: 25%;
+						text-align: center;
+						background-color: #AAAAAA;
+						color: white;
+						padding: 5px;
+						border: 1px solid;
+					}
+				 .actionbutton_container .active{
+					background-color: #0070bc;
+				}
+		</style>
+	</head>
+
+	<body>
+		<div class="mui-content">
+			<div id="slider" class="mui-slider mui-fullscreen">
+				<div id="sliderSegmentedControl" class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted timeplay_tit">
+					<div class="mui-scroll">
+						<a class="mui-control-item  mui-active spanjs" href="#item1mobile" id="nowPlan">
+							<div><img src="../images/timeicon03.png" />
+							<p>今日安排 </p></div>
+						</a>
+						<a class="mui-control-item spanjs" href="#item2mobile" id="historyTime">
+							<div><img src="../images/timeicon01.png" />
+							<p>历史时间 </p></div>
+						</a>
+						<a class="mui-control-item spanjs" href="#item3mobile" id="featurePlan">
+							<div><img src="../images/timeicon02.png" />
+							<p>未来计划 </p></div>
+						</a>
+						<a class="mui-control-item spanjs " href="#item4mobile" classify="0"  id="importHint">
+							<div><img src="../images/flag.png" />
+							<p>重要提示 </p></div>
+						</a>
+						<a class="mui-control-item spanjs" id="addtime">
+							<div><img src="../images/timeicon04.png" />
+							<p >新增安排 </p>
+							</div>
+						</a>
+					</div>
+				</div>
+				<!--标题结束-->
+				<div	   class="actionbutton_container ">
+											<a class="active" classify="0" class="">全部</a>
+											<a classify="1" class="">报价</a>
+											<a classify="2" class="">解密</a>
+											<a classify="3" class="">议价</a>
+										</div>
+				<div id="group_container" class="mui-slider-group">
+					
+					<div id="item1mobile" class="mui-slider-item mui-control-content mui-active">
+						<div class="mui-scroll-wrapper">
+							<div id="index_page_refresh" class="mui-scroll timeplay_con">
+								<ul class="mui-table-view OA_task_3" id="timeTable_3">
+									
+									<script type="text/html" id="messageLCellTpl3">
+									{{# for(var i = 0, len = d.length; i < len; i++){ }}
+									<li class="mui-table-view-cell" ArticleID='{{d[i].ArticleID}}' ChannelID='{{d[i].ChannelID}}' data-id='{{ d[i].RMID}}'>
+										<div class="mui-slider-right mui-disabled">
+											<!--<a class="mui-btn mui-btn-blue">不在提醒</a>-->
+											<a class="mui-btn mui-btn-yellow" href='#picture'>分享</a>
+											<a class="mui-btn mui-btn-red">删除</a>
+										</div>
+										<div class="mui-slider-handle leftconbox">
+											<a class="leftcon"  href="#">
+												<h6 class="classify">
+													［{{d[i].Classify}}］
+												</h6>
+												<div >
+													<span>开始时间 {{ d[i].StartTime }} </span>
+													<span>结束时间 {{ d[i].EndTime }}</span>
+												</div>	
+												
+												<p>{{#  if( d[i].AreaName){ }}<span>【{{d[i].AreaName}}】</span>{{# } }}<span class="span02">{{ d[i].Content }}</span></p>
+												
+											</a>
+											<span   class="nowarn">不再提醒</span>
+										</div>
+									</li>
+									{{# } }}
+									</script>
+									
+								</ul>
+							</div>
+						</div>
+						<div id="showAll" style=" z-index: 9999; position: fixed; left: 0px; bottom: 8px; padding: 0px; margin: 0px; width: 100%; text-align: center;">
+							<div id="showContent" style="display:inline-block;color: #fff; background-color: #0070bc; padding: 0px 12px; height: 32px; line-height: 32px; border-radius: 3px; font-size: 15px;">隐藏已完成的</div>
+						</div>
+					</div>
+					
+					<div id="item2mobile" class="mui-slider-item mui-control-content ">
+						<div id="scroll1" class="mui-scroll-wrapper">
+							<div class="mui-scroll timeplay_con">
+								<ul class="mui-table-view OA_task_1" id="timeTable_1">
+									
+									<script type="text/html" id="messageLCellTpl1">
+									{{# for(var i = 0, len = d.length; i < len; i++){ }}
+									<li class="mui-table-view-cell" data-id='{{ d[i].RMID}}' ArticleID='{{d[i].ArticleID}}' ChannelID='{{d[i].ChannelID}}' >
+										<div class="mui-slider-right mui-disabled">
+											<!--<a class="mui-btn mui-btn-blue">不在提醒</a>-->
+											<a class="mui-btn mui-btn-yellow" href='#picture'>分享</a>
+											<a class="mui-btn mui-btn-red">删除</a>
+										</div>
+										<div class="mui-slider-handle leftconbox">
+											<a class="leftcon" href="#">
+												<div>
+													<h6 class="classify">
+														［{{d[i].Classify}}］
+													</h6>
+												<span> 开始时间 {{ d[i].StartTime }}</span>至<span> 结束时间{{ d[i].EndTime }}</span></div>	
+												<p>{{#  if( d[i].AreaName){ }}<span>【{{d[i].AreaName}}】</span>{{# } }}<span class="span02">{{ d[i].Content }}</span></p>
+											</a>
+											<!--<span class="nowarn">不再提醒</span>-->
+										</div>
+										
+									</li>
+									{{# } }}
+									</script>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div id="item3mobile" class="mui-slider-item mui-control-content">
+							<div class="mui-scroll-wrapper">
+								<div class="mui-scroll timeplay_con">
+									<ul class="mui-table-view OA_task_2"  id="timeTable_2">
+										
+												<script type="text/html" id="messageLCellTpl2">
+												{{# for(var i = 0, len = d.length; i < len; i++){ }}
+												<li class="mui-table-view-cell" data-id='{{ d[i].RMID}}' ArticleID='{{d[i].ArticleID}}' ChannelID='{{d[i].ChannelID}}' >
+													<div class="mui-slider-right mui-disabled">
+														<!--<a class="mui-btn mui-btn-blue">不在提醒</a>-->
+														<a class="mui-btn mui-btn-yellow" href='#picture'>分享</a>
+														<a class="mui-btn mui-btn-red">删除</a>
+													</div>
+													<div class="mui-slider-handle leftconbox">
+														<a class="leftcon" href="#">
+															<div>
+																<h6 class="classify">
+																	［{{d[i].Classify}}］
+																</h6>
+																<span>开始时间 {{ d[i].StartTime }}</span><span>结束时间 {{ d[i].EndTime }}</span></div>	
+															<p>{{#  if( d[i].AreaName){ }}<span>【{{d[i].AreaName}}】</span>{{# } }}<span class="span02">{{ d[i].Content }}</span></p>
+														</a>
+														<span module="timeTable_2" status="{{d[i].NotRemindRMUID==null?true:false}}"  class="nowarn">{{d[i].NotRemindRMUID==null?'不再提醒':'继续提醒'}}</span>
+														
+														
+														
+													</div>
+													
+												</li>
+												{{# } }}
+												</script>
+												
+									</ul>
+								</div>
+							</div>
+							<div id="floatActionBtn" style=" z-index: 9999; position: absolute; left: 0px; bottom: 8px; padding: 0px; margin: 0px; width: 100%; text-align: center;">
+							  <div id="showAdabon" status='true' style="display:inline-block;color: #fff; background-color: #0070bc; padding: 0px 12px; height: 32px; line-height: 32px; border-radius: 3px; font-size: 15px;">未来计划(全部)</div>
+						</div>
+					</div>
+					<!--重要提示-->
+					<div id="item4mobile" class="mui-slider-item mui-control-content ">
+										
+						<div id="scroll4" class="mui-scroll-wrapper">
+							
+							<div class="mui-scroll timeplay_con">
+								<ul class="mui-table-view OA_task_4"  id="timeTable_4">
+									<script type="text/html" id="messageLCellTpl4">
+										
+									{{# for(var i = 0, len = d.length; i < len; i++){ }}
+									<li class="mui-table-view-cell" data-id='{{ d[i].RMID}}' ArticleID='{{d[i].ArticleID}}' ChannelID='{{d[i].ChannelID}}' >
+										<div class="mui-slider-right mui-disabled">
+											<!--<a class="mui-btn mui-btn-blue">不在提醒</a>-->
+											<a class="mui-btn mui-btn-yellow" href='#picture'>分享</a>
+											<a class="mui-btn mui-btn-red">删除</a>
+										</div>
+										<div class="mui-slider-handle leftconbox">
+											<a class="leftcon" href="#">
+												<div>
+													<h6 class="classify">
+														［{{d[i].Classify}}］
+													</h6>
+													
+													<span> 开始时间 {{ d[i].StartTime }}</span>至<span> 结束时间{{ d[i].EndTime }}</span></div>	
+												<p>{{#  if( d[i].AreaName){ }}<span>【{{d[i].AreaName}}】</span>{{# } }}<span class="span02">{{ d[i].Content }}</span></p>
+											</a>
+											<!--<span class="nowarn">不再提醒</span>-->
+										</div>
+										
+									</li>
+									{{# } }}
+									</script>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+	<!--底部弹出内容-->
+	<div id="picture" class="mui-popover mui-popover-action mui-popover-bottom">
+		<ul class="mui-table-view shareul">
+			<li class="mui-table-view-cell" onclick="shareAction('weixin','WXSceneSession');">
+				<div><img src="../images/share02.gif" /></div>
+				<p>微信</p>
+			</li>
+			<li class="mui-table-view-cell"  onclick="shareAction('weixin','WXSceneTimeline');">
+				<div><img src="../images/share03.gif" /></div>
+				<p>朋友圈</p>
+			</li>
+			<li class="mui-table-view-cell" onclick="shareAction('sinaweibo');">
+				<div><img src="../images/share04.gif" /></div>
+				<p>微博</p>
+			</li>
+			<li class="mui-table-view-cell" onclick="shareAction('qq');">
+				<div><img src="../images/share05.gif" /></div>
+				<p>QQ</p>
+			</li>
+		</ul>
+		<ul class="mui-table-view">
+			<li class="mui-table-view-cell">
+				<a href="#picture"><b>取消</b></a>
+			</li>
+		</ul>
+	</div>
+		
+		
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/mui.pullToRefresh.js"></script>
+		<script src="../js/mui.pullToRefresh.material.js"></script>
+		<script type="text/javascript" src="../js/share.js" ></script>
+		<script type="text/javascript" src="../js/laytpl.js" ></script>
+		<script src="../js/jquery-1.11.1.min.js"></script>
+		<script src="../js/ajax.js"></script>
+		<script>
+			mui.init({
+				beforeback: function(){
+					//释放
+					user = null;messagetpl = null;messagetp2 = null;messagetp3 = null;
+					token = null,page1=null,page2 = null,page3=null,transtime=null;
+					isShow=null,title=null,shareurl=null,share_thumb=null,description=null;
+					//返回true，继续页面关闭逻辑
+					return true;
+				}
+			});
+		
+			var token=null;
+			var user=null;
+			var page1 = 1;
+			var page2 = 1;
+			var page3 = 1;
+			var page4 = 1;
+			var transtime = getNowFormatDate();
+			var messagetpl = document.getElementById('messageLCellTpl1').innerHTML;//历史时间
+			var messagetp2 = document.getElementById('messageLCellTpl2').innerHTML;//未来计划
+			var messagetp3 = document.getElementById('messageLCellTpl3').innerHTML;//今日安排
+			var messagetp4 = document.getElementById('messageLCellTpl4').innerHTML;//重要提示
+			var isShow=null;
+			var title=null,shareurl=null;
+			var importHint = document.getElementById("importHint")
+      		var share_thumb="http://www.elianxinxi.com/logo.png",description="分享来自易联招采";
+			
+			mui.plusReady(function() {
+				mui(".actionbutton_container").on('tap','a',function(){
+						$(this).addClass('active');
+						$(this).siblings().removeClass('active');
+						 
+						importHint.setAttribute("classify",this.getAttribute('classify'));
+						
+						mui.trigger(importHint,'tap');
+						mui('#scroll4').scroll().scrollTo(0,0);
+					});
+				//刷新代理
+				//登陆后出发此事件获取个人信息并加载
+			   window.addEventListener('refresh_content',function(event) {
+			   		var defaultTab = document.getElementById("nowPlan");
+					//模拟点击
+					mui.trigger(defaultTab, 'tap');
+					defaultTab = null;
+			   });
+				
+				updateSerivces();//分享设置
+				isShow = plus.storage.getItem('isShow');
+				if (isShow == '1'){
+					document.getElementById("showContent").innerHTML = '隐藏已完成的';
+				}
+				
+				document.getElementById("addtime").addEventListener('tap',function() {
+					user=judgeLogin();
+					if (user) {
+						openpage('timeaddplay.html');
+					}else {
+						plus.nativeUI.toast("请登录");
+						openpage('login_standard.html');
+					}
+					user = null;
+				});
+				//点击历史时间
+				document.getElementById("historyTime").addEventListener('tap',function() {
+					user=judgeLogin();
+					if (user){
+						token = user.token;
+						//getUserTimeList(data_token,pageIndex,isShow,status,tpl,tplView_id)
+						getUserTimeList(this,token,1,1,1,messagetpl,'timeTable_1','OA_task_1',"0");
+						
+					}else {
+						plus.nativeUI.toast("请登录");
+						openpage('login_standard.html');
+					}
+					user= null;
+				},false);
+				
+				
+				//点击今日安排
+				document.getElementById("nowPlan").addEventListener('tap',function() {
+					user=judgeLogin();
+					isShow = plus.storage.getItem('isShow') ? plus.storage.getItem('isShow'): '0';
+					if (user){
+						token = user.token;
+						getUserTimeList(this,token,1,isShow,0,messagetp3,'timeTable_3','OA_task_3',"0");
+					}else {
+						plus.nativeUI.toast("请登录");
+						openpage('login_standard.html');
+					}
+					user = null;
+				},false);
+//				document.getElementById("importHint").addEventListener('doubletap',function(){
+//					this.setAttribute("classify","0");
+//					$(".actionbutton_container a").removeClass("active");
+//					mui.trigger(this,'tap');
+//				})
+				
+				document.getElementById("importHint").addEventListener('tap',function(event) {
+					var classify = this.getAttribute("classify");
+					user=judgeLogin();
+					if (user){
+						token = user.token;
+						//getUserTimeList(data_token,pageIndex,isShow,status,tpl,tplView_id)
+						getUserTimeList(this,token,1,1,3,messagetp4,'timeTable_4','OA_task_4',classify);
+					}else {
+						plus.nativeUI.toast("请登录");
+						openpage('login_standard.html');
+					}
+				});
+				//点击未来计划
+				document.getElementById("featurePlan").addEventListener('tap',function(event) {
+					var isShow_2=null;
+					if(event.detail.hasOwnProperty('isShow_2')){
+						isShow_2 = event.detail.isShow_2
+						//mui.alert(isShow)
+					}else{
+						isShow_2 = "1";
+						plus.storage.setItem("isShow_2","1")
+					}
+					user=judgeLogin();
+					if (user){
+						token = user.token;
+						//getUserTimeList(data_token,pageIndex,isShow,status,tpl,tplView_id)
+						getUserTimeList(this,token,1,isShow_2,2,messagetp2,'timeTable_2','OA_task_2',"0");
+					}else {
+						plus.nativeUI.toast("请登录");
+						openpage('login_standard.html');
+					}
+					isShow_2 = null;
+					user = null;
+				},false);
+				
+				
+				//点击今日全部安排 
+				document.getElementById("showAll").addEventListener('tap',function(){
+					isShow = plus.storage.getItem('isShow') ? plus.storage.getItem('isShow'): '0';
+					if (isShow == '0'){
+						plus.storage.setItem('isShow','1');
+						document.getElementById("showContent").innerHTML = '今日全部安排';//今日全部安排
+					}else {
+						plus.storage.setItem('isShow','0');
+						document.getElementById("showContent").innerHTML = '隐藏已完成的';
+					}
+					var defaultTab = document.getElementById("nowPlan");
+					//模拟点击
+					mui.trigger(defaultTab, 'tap');
+				});
+				
+				document.getElementById("showAdabon").addEventListener('tap',function(){
+					//var flag = this.getAttribute('status')
+					var isShow_2 = plus.storage.getItem('isShow_2');
+					if(isShow_2 == '0'){
+						isShow_2='1'
+						plus.storage.setItem('isShow_2','1');
+						this.innerHTML="未来计划(全部)"
+					}else if(isShow_2=="1"){
+						isShow_2='0'
+						plus.storage.setItem('isShow_2','0');
+						this.innerHTML="未来计划"
+					}
+					var defaultTab = document.getElementById("featurePlan");
+					//模拟点击
+					mui.trigger(defaultTab,'tap',{isShow_2:isShow_2});
+					isShow_2 = null;
+				});
+				
+				mui('.mui-table-view').on('tap', '.mui-btn-yellow', function(event) {
+					//多次dom遍历，效率偏低
+					title = $(this).parent().parent().find(".leftconbox").find(".leftcon").find("p").find(".span02").html()
+				});
+				mui(".mui-table-view").on('tap','.mui-table-view-cell',function(){
+					var user = judgeLogin()
+					//跳转详情
+					var channelID = this.getAttribute('ChannelID');
+					var articleID = this.getAttribute('ArticleID');
+					//console.log("timeindex: channelID,articleID:",channelID+" , "+articleID)
+					if (unsafe_tap()) return;//防御编码
+						mui.openWindow({
+							id: 'base_page.html',
+							url: 'base_page.html',
+							styles: {
+								top: 0,
+								bottom: 0,
+								bounce: 'none',
+								popGesture: 'close'
+							},
+							 extras:{
+							 	pageurl:ajax_articleDetailURL,
+							 	usertoken:user.token,
+							 	transtime:transtime,
+							 	pagechannelid:channelID,
+							 	pagearticleid:articleID,
+							 	atitle:'推送详细',
+							 },
+							 waiting:{
+							 	autoShow:false,
+							 },
+							createNew:false,//是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+						});
+				})
+				
+				
+			});
+			//ajax_updateTimeWarnURL
+			
+			mui('.mui-table-view').on('tap','.nowarn',function(event) {
+				//阻止事件冒泡到item事件
+				event.stopPropagation()
+				var urlOpretion = ajax_cacelTimeWarnURL;
+				var status=null;
+				var $this = this;
+				if(this.hasAttribute('status')){
+					 status = this.getAttribute('status');
+				     urlOpretion = status=='true'?ajax_cacelTimeWarnURL:ajax_updateTimeWarnURL
+				}
+				//var $this = this;
+				var RMID = this.parentNode.parentNode.getAttribute('data-id');
+				var li = this.parentNode.parentNode;
+				var data_form = {
+						token:token,
+						transtime:transtime,
+						RMID:RMID,
+				};
+				mui.ajax(urlOpretion,{
+					data:data_form,
+					dataType:'json',
+					type:'post',
+					timeout:10000,
+					success:function(data){
+						console.log("urlOpretion:",urlOpretion)
+						console.log("data_form:",JSON.stringify(data_form));
+						console.log(data);
+						data = JSON.parse(data);
+						if (data.result == 1){
+							if(status!='true'){
+								$this.innerText = "不再提醒";
+								$this.setAttribute("status","true")
+							}else if(plus.storage.getItem("isShow_2")=='0'){
+								$this.innerText = "继续提醒";
+								$this.setAttribute("status","false")
+							}else{
+								li.parentNode.removeChild(li);
+							}
+							mui.toast('设置成功');
+						}
+					},
+					error:function(xhr,type,errorThrown){
+						//异常处理；
+//						mui.toast("请求出错");
+					}
+				});
+				
+				
+			});
+			 //自定义事件，模拟点击
+			document.addEventListener('gohome', function() {
+				var defaultTab = document.getElementById("nowPlan");
+				//模拟点击
+				mui.trigger(defaultTab, 'tap');
+				defaultTab = null;
+			});
+
+			
+			
+			(function($) {
+				//阻尼系数
+				var deceleration = mui.os.ios?0.003:0.0009;
+				$('.mui-scroll-wrapper').scroll({
+					bounce: false,
+					indicators: true, //是否显示滚动条
+					deceleration:deceleration
+				});
+				$.ready(function() {
+					//循环初始化所有下拉刷新，上拉加载。
+					$.each(document.querySelectorAll('.mui-slider-group .mui-scroll'), function(index, pullRefreshEl) {
+						
+						$(pullRefreshEl).pullToRefresh({
+							down: {
+								callback: function() {
+									var self = this;
+									user=plus.storage.getItem('memberdata');
+									setTimeout(function() {
+										var ul = self.element.querySelector('.mui-table-view');
+										if (user){
+											var userdata=JSON.parse(user);
+											token = userdata.token;
+											switch(index)
+											{
+											case 0:
+											  page1 = 1;
+											  //getUserTimeList(data_token,pageIndex,isShow,status,tpl,tplView_id)
+											   isShow = plus.storage.getItem('isShow') ? plus.storage.getItem('isShow'): '0';
+											   getUserTimeList(token,page1,isShow,0,messagetp3,'timeTable_3','OA_task_3');
+											  break;
+											case 1:
+											  page2 = 1;
+											  getUserTimeList(token,page2,1,1,messagetpl,'timeTable_1','OA_task_1');
+											  break;
+											case 2:
+											  page3 = 1;
+											     var isShow_2 = plus.storage.getItem('isShow_2');
+											 	  getUserTimeList(token,page3,isShow_2,2,messagetp2,'timeTable_2','OA_task_2');
+												break;
+											
+											case 3:
+											  page4 = 1;
+											 	  getUserTimeList(token,page4,1,3,messagetp4,'timeTable_4','OA_task_4',importHint.getAttribute('classify'));
+												break;
+											}
+											
+										}
+//										ul.insertBefore(createFragment(ul, index, 10, true), ul.firstChild);
+										self.endPullDownToRefresh();
+									}, 1000);
+								}
+							},
+							up: {
+								callback: function() {
+									var self = this;
+									setTimeout(function() {
+										var ul = self.element.querySelector('.mui-table-view');
+//										ul.appendChild(createFragment(ul, index, 5));
+										user=plus.storage.getItem('memberdata');
+										if (user){
+											var userdata=JSON.parse(user);
+											token = userdata.token;
+											switch(index)
+											{
+											case 0:
+											  page1++;
+											   //getUserTimeList(data_token,pageIndex,isShow,status,tpl,tplView_id)
+											  isShow = plus.storage.getItem('isShow') ? plus.storage.getItem('isShow'): '0';
+											  getUserTimeList(token,page1,isShow,0,messagetp3,'timeTable_3','OA_task_3');
+											  
+											  break;
+											case 1:
+											  page2++;
+											   //getUserTimeList(data_token,pageIndex,isShow,status,tpl,tplView_id)
+											 getUserTimeList(token,page2,1,1,messagetpl,'timeTable_1','OA_task_1');
+											  break;
+											case 2:
+											  page3++;
+											   //getUserTimeList(data_token,pageIndex,isShow,status,tpl,tplView_id)
+											   var isShow_2 = plus.storage.getItem('isShow_2');
+											   getUserTimeList(token,page3,isShow_2,2,messagetp2,'timeTable_2','OA_task_2');
+											   break;
+											case 3:
+											  page4++;
+											 	  getUserTimeList(token,page4,1,3,messagetp4,'timeTable_4','OA_task_4',importHint.getAttribute('classify'));
+												break;
+											
+											}
+										}
+										self.endPullUpToRefresh();
+									}, 1000);
+								}
+							}
+						});
+					});
+				});
+				
+				
+			})(mui);
+			
+			/**/
+			(function($) {
+				mui('.timeplay_con').on('tap', '.mui-btn-red', function(event) {
+					var elem = this;
+					var li = elem.parentNode.parentNode;
+					mui.confirm('确认删除该条记录？', '温馨提醒', btnArray, function(e) {
+						if (e.index == 0) {
+							li.parentNode.removeChild(li);
+							var RMID = li.getAttribute('data-id');
+							deledataTimeListLi(RMID);
+						} else {
+							setTimeout(function() {
+								$.swipeoutClose(li);
+							}, 0);
+						}
+					});
+				});
+				var btnArray = ['确认', '取消'];
+				
+			})(mui);
+			
+	//删除
+	function deledataTimeListLi(RMID) {
+		mui.ajax(ajax_cacelTimeURl,{
+			data:{
+				token:token,
+				transtime:transtime,
+				RMID:RMID,
+			},
+			dataType:'json',
+			type:'post',
+			timeout:10000,
+			success:function(data){
+				data = JSON.parse(data);
+				if (data.result == 1){
+					mui.toast('删除成功');
+				}
+			},
+			error:function(xhr,type,errorThrown){
+				//异常处理；
+//				mui.toast("请求出错");
+			}
+		});
+	}			
+			//获取数据
+	function getUserTimeList(tabbar,data_token,pageIndex,isShow,status,tpl,tplView_id,class_id,classify){
+		if(tplView_id=="timeTable_4"){
+			if(mui.os.android){
+				$("#group_container").css({top:"120px"})
+				$(".actionbutton_container").css("display","block")
+			}else{
+				$("#group_container").animate({top:"120px"},function(){
+					$(".actionbutton_container").slideDown()
+			});
+		}
+			
+		}else if($("#group_container").css('top')!="80px") {
+			if(mui.os.android){
+				$("#group_container").css({top:"80px"})
+				$(".actionbutton_container").css("display","none")
+			}else{
+				$("#group_container").animate({top:"80px"},function(){
+					$(".actionbutton_container").slideUp();
+			});
+			}
+			
+		}
+		if(tplView_id=='timeTable_2'){
+			$("#toggleCasefuture").toggleClass('mui-hidden')
+		}
+		var data_form = {
+				token:data_token,
+				transtime:transtime,
+				pageIndex:pageIndex,
+				IsShow:isShow,
+				Status:status,
+				classify:classify
+		};
+		plus.nativeUI.showWaiting('', {
+				padlock: true
+			});
+		mui.ajax(ajax_timePlaneURL,{
+			data:data_form,
+			dataType:'json',
+			type:'post',
+			timeout:10000,
+			success:function(data){
+				console.log("url:",ajax_timePlaneURL)
+				console.log("dataform:",JSON.stringify(data_form))
+				console.log(data)
+				plus.nativeUI.closeWaiting();
+				data = JSON.parse(data);
+				if (data.result == 1 ){
+					delegateTimeT(data.TimePlan);
+					if (pageIndex == 1){
+						if(data.TimePlan.length==0){
+							mui.toast("没有可用数据")
+							document.getElementById(tplView_id).innerHTML = "";
+						}else{
+							laytpl(tpl).render(data.TimePlan,function(h){	
+									document.getElementById(tplView_id).innerHTML = h;
+								});
+						}	
+					}else {
+						var ul = document.getElementById(tplView_id);
+						var d = data.TimePlan
+						ul.appendChild(createFragment(ul, d));
+					} 
+				}
+				else {
+					plus.nativeUI.closeWaiting();
+					//openpage('login_standard.html');
+					if(data.ErrorCode=="10001"){
+						openpage('login_standard.html');
+					}
+				}
+			},
+			error:function(xhr,type,errorThrown){
+				//异常处理；
+				plus.nativeUI.closeWaiting();
+//				mui.toast("请求出错");
+			}
+		});
+	}
+	
+	function delegateTimeT(d){
+		for ( var i = 0; i < d.length; i++){
+			d[i].StartTime = d[i].StartTime.replace("T"," ");
+			d[i].StartTime = d[i].StartTime.substring(0,d[i].StartTime.lastIndexOf(":"));;
+			d[i].EndTime = d[i].EndTime.replace("T"," ");
+			d[i].EndTime = d[i].EndTime.substring(0,d[i].EndTime.lastIndexOf(":"));;
+		}
+		return d;
+	}
+	
+	var createFragment = function(ul, d) {
+		var length = ul.querySelectorAll('li').length;
+		var fragment = document.createDocumentFragment();
+		var li;
+		for (var i = 0; i < d.length; i++) {
+			li = document.createElement('li');
+			li.className = 'mui-table-view-cell';
+			li.setAttribute('data-id',d[i].RMID);
+			if(d[i].NotRemindRMUID!=null){
+				message = '<span class="continueremind">继续提醒</span>'
+			}else{
+				message = '<span class="nowarn">不再提醒</span>'
+			}
+			li.innerHTML = '<div class="mui-slider-right mui-disabled"><a class="mui-btn mui-btn-yellow" href="#picture">分享</a><a class="mui-btn mui-btn-red">删除</a></div>'+
+				'<div class="mui-slider-handle leftconbox"><a class="leftcon" href="#"><div><span>开始时间'+
+				d[i].StartTime +'</span><span>结束时间' + d[i].EndTime + '</span></div><p><span>【'+d[i].AreaName + '】</span><span class="span02">' +d[i].Content+'</span></p></a>' 
+				+message+'</div>';
+			fragment.appendChild(li);
+		}
+		return fragment;
+	};
+	
+		</script>
+	</body>
+
+</html>

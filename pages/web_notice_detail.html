@@ -6,9 +6,135 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black">
     <title></title>
-    <script src="../js/mui.min.js"></script>
     <link href="../css/mui.min.css" rel="stylesheet"/>
     <link href="../css/zssg.css" rel="stylesheet"/>
+   
+    <style>
+		body { padding-bottom: 60px;}
+		body,p,div { color: #666;}
+		.colletion_main { margin: 15px 7px 5px 7px;}
+     	.colletion_main h6 { font-size: 18px; color: #333; line-height: 22px; margin: 0px;}
+     	.colletion_main div.tit { border-bottom: 1px solid #c9c9c9; margin-bottom: 15px;}
+     	.colletion_main div.tit p { margin: 10px 0px 10px; color: #999;}
+     	.colletion_main div.tit span:nth-of-type(1) { display: inline-block; padding: 0px 13px; margin-right: 10px; height: 22px; line-height: 22px; color: #fff; background-color: #08aa45;
+		 border-radius: 30px;}
+		.colletion_main .con { line-height: 24px; overflow-x:scroll;}
+		#picture .shareul { background-color: #fff}
+		#picture .shareul li { float: left; width: 33%; text-align: center;}
+		#picture .shareul li:after { height: 0px;}
+		#picture .shareul li div { margin: 0px auto 5px;}
+		#picture ul li div img { display: block; width: 70%; max-width: 100px; margin: 0px auto;}
+		#picture ul li p { color: #333; height: 24px; line-height: 24px; font-size: 14px;}
+		.downbox { position: fixed; width: 100%; left: 0px; bottom: 0px; height: 44px; overflow: hidden;
+		 border-top: 1px solid #b2b2b2; padding: 0px; margin: 0px; background-image:linear-gradient(to bottom,#fff,#eee,#c4c4c4);}
+		.downbox > div { text-align: center;}
+		.downbox div a { display: block;}
+		.downbox div a p { color: #333;}
+		.downbox div span.mui-icon  { display: block; color: #08aa45; font-size: 28px; font-weight: bold; margin: 0px; padding: 0px;}
+		.mui-bar-nav a { color: #fff;}
+		.label-table{
+		    line-height:1.8em;
+		    font-size: 0.7em;
+		    /* 3 times the line-height to show 3 lines */
+		    height:4em;
+					}
+		#content p{
+		  /* font-family : '微软雅黑','宋体',Helvetica,Arial,sans-serif;*/
+		   font-size: 16px;
+		   color: rgb(69,69,69);
+		}
+		*{
+        -webkit-user-select: text; /* Disable selection/Copy of UIWebView */
+    }
+		.contenttable{
+		overflow: scroll;
+		max-width: 100%;
+		max-height: 80vh;
+		}
+	</style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav">
+	    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" style="color: #fff;"></a>
+	    <h1 class="mui-title" id="htitle"></h1>
+	    <a class="mui-icon mui-icon-more mui-pull-right " href="#picture"></a>
+	</header>
+	
+	<!--主体部分-->
+	<div class="mui-content colletion_main">
+		<div class="tit">
+			<h6 id="title"></h6>
+			<p><span  style="max-width:70%;overflow: hidden;" id="sourcename"></span><span style="float: right;" id="addtime"></span></p>
+		</div>
+		<div class="con overflow-container" >
+			<div class="div_content" id="content"  >
+				
+			</div>
+		</div>
+	</div>
+	
+	<!--附件下载-->	
+	
+		
+	<!--底部弹出内容-->
+	<div id="picture" class="mui-popover mui-popover-action mui-popover-bottom">
+		<ul class="mui-table-view shareul">
+			<li class="mui-table-view-cell" id="addCollection">
+				<div><img src="../images/share01.gif" /></div>
+				<p>收藏</p>
+			</li>
+			<li class="mui-table-view-cell" onclick="shareAction('weixin','WXSceneSession');">
+				<div><img src="../images/share02.gif" /></div>
+				<p>微信</p>
+			</li>
+			<li class="mui-table-view-cell"  onclick="shareAction('weixin','WXSceneTimeline');">
+				<div><img src="../images/share03.gif" /></div>
+				<p>朋友圈</p>
+			</li>
+			<li class="mui-table-view-cell" onclick="shareAction('sinaweibo');">
+				<div><img src="../images/share04.gif" /></div>
+				<p>微博</p>
+			</li>
+			<li class="mui-table-view-cell" onclick="shareAction('qq');">
+				<div><img src="../images/share05.gif" /></div>
+				<p>QQ</p>
+			</li>
+		</ul>
+		<ul class="mui-table-view">
+			<li class="mui-table-view-cell">
+				<a href="#picture"><b>取消</b></a>
+			</li>
+		</ul>
+	</div>
+	
+	
+	<div id="down_list_popover_div"  class="mui-popover mui-popover-action mui-popover-bottom">
+			  <ul id="down-list-popover" class="mui-table-view"  >
+			  </ul>
+			  <ul class="mui-table-view">
+			  	<li class="mui-table-view-cell ">
+					<a href="#" onclick="download_list('down-list-popover')"><b>下载</b></a>
+				</li>
+			</ul>
+	</div>
+	<script type="text/html" id="popover-tpl">
+		<!--多个下载链接弹出-->
+		
+			  {{# for(var i = 0, len = d.length; i < len; i++){ }}
+				    <li class="mui-table-view-cell ">
+				       <div class="mui-input-row mui-checkbox  mui-left " style="{{d[i].flagexist?'width:80%':''}} ">
+						  <label class="label-table mui-text-left" >
+						  	{{d[i].FileName }}
+						  </label>
+						  <input style="height: 4em;line-height: 2em;overflow: hidden;"  downloadurl="{{d[i].FilePath}}" downloadname="{{ d[i].FileName }}" name="checkbox_download" value="" type="checkbox">
+				       </div>
+				       <button {{d[i].flagexist?'':'disabled=disabled'}}  type="button" onclick="openFile('{{d[i].FileName}}')" class="mui-btn-primary mui-btn mui-right {{d[i].flagexist?'':'mui-hidden'}}">查看</button>
+				    </li>
+				{{# } }}
+	</script>	
+	
+</body>
+	 <script src="../js/mui.min.js"></script>
     <script src="../js/core.js"></script>
     <script src="../js/enc-base64.js"></script>
     <script src="../js/jquery-1.11.1.min.js"></script>
@@ -35,10 +161,10 @@
       	var zoom= null;
       	var share_thumb="http://www.elian.net/logo.png",description="分享来自易联招采";
       	mui.init	();
-      	mui.ready(function()
-      	{
-      		plusReady();
-      	})
+//    	mui.ready(function()
+//    	{
+//    		plusReady();
+//    	})
       	//  http://www.elianxinxi.com/logo.ico
       	// 扩展API加载完毕，现在可以正常调用扩展API
       	function plusReady(){
@@ -88,12 +214,12 @@
 			   });
       	}
 // 判断扩展API是否准备，否则监听"plusready"事件
-//if(window.plus){
-//	
-//	plusReady();
-//}else{
-//	document.addEventListener("plusready",plusReady,false);
-//}
+if(window.plus){
+	
+	plusReady();
+}else{
+	document.addEventListener("plusready",plusReady,false);
+}
 function refreshpopuwindow(option_toggle){
 	var down_list_popover =  document.getElementById('down-list-popover').innerHTML;
       				var popover_tpl = document.getElementById('popover-tpl').innerHTML;
@@ -373,130 +499,4 @@ function openFile(fileName){
 }
 
     </script>
-    <style>
-		body { padding-bottom: 60px;}
-		body,p,div { color: #666;}
-		.colletion_main { margin: 15px 7px 5px 7px;}
-     	.colletion_main h6 { font-size: 18px; color: #333; line-height: 22px; margin: 0px;}
-     	.colletion_main div.tit { border-bottom: 1px solid #c9c9c9; margin-bottom: 15px;}
-     	.colletion_main div.tit p { margin: 10px 0px 10px; color: #999;}
-     	.colletion_main div.tit span:nth-of-type(1) { display: inline-block; padding: 0px 13px; margin-right: 10px; height: 22px; line-height: 22px; color: #fff; background-color: #08aa45;
-		 border-radius: 30px;}
-		.colletion_main .con { line-height: 24px; overflow-x:scroll;}
-		#picture .shareul { background-color: #fff}
-		#picture .shareul li { float: left; width: 33%; text-align: center;}
-		#picture .shareul li:after { height: 0px;}
-		#picture .shareul li div { margin: 0px auto 5px;}
-		#picture ul li div img { display: block; width: 70%; max-width: 100px; margin: 0px auto;}
-		#picture ul li p { color: #333; height: 24px; line-height: 24px; font-size: 14px;}
-		.downbox { position: fixed; width: 100%; left: 0px; bottom: 0px; height: 44px; overflow: hidden;
-		 border-top: 1px solid #b2b2b2; padding: 0px; margin: 0px; background-image:linear-gradient(to bottom,#fff,#eee,#c4c4c4);}
-		.downbox > div { text-align: center;}
-		.downbox div a { display: block;}
-		.downbox div a p { color: #333;}
-		.downbox div span.mui-icon  { display: block; color: #08aa45; font-size: 28px; font-weight: bold; margin: 0px; padding: 0px;}
-		.mui-bar-nav a { color: #fff;}
-		.label-table{
-		    line-height:1.8em;
-		    font-size: 0.7em;
-		    /* 3 times the line-height to show 3 lines */
-		    height:4em;
-					}
-		#content p{
-		  /* font-family : '微软雅黑','宋体',Helvetica,Arial,sans-serif;*/
-		   font-size: 16px;
-		   color: rgb(69,69,69);
-		}
-		*{
-        -webkit-user-select: text; /* Disable selection/Copy of UIWebView */
-    }
-		.contenttable{
-		overflow: scroll;
-		max-width: 100%;
-		max-height: 80vh;
-		}
-	</style>
-</head>
-<body>
-	<header class="mui-bar mui-bar-nav">
-	    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" style="color: #fff;"></a>
-	    <h1 class="mui-title" id="htitle"></h1>
-	    <a class="mui-icon mui-icon-more mui-pull-right " href="#picture"></a>
-	</header>
-	
-	<!--主体部分-->
-	<div class="mui-content colletion_main">
-		<div class="tit">
-			<h6 id="title"></h6>
-			<p><span  style="max-width:70%;overflow: hidden;" id="sourcename"></span><span style="float: right;" id="addtime"></span></p>
-		</div>
-		<div class="con overflow-container" >
-			<div class="div_content" id="content"  >
-				
-			</div>
-		</div>
-	</div>
-	
-	<!--附件下载-->	
-	
-		
-	<!--底部弹出内容-->
-	<div id="picture" class="mui-popover mui-popover-action mui-popover-bottom">
-		<ul class="mui-table-view shareul">
-			<li class="mui-table-view-cell" id="addCollection">
-				<div><img src="../images/share01.gif" /></div>
-				<p>收藏</p>
-			</li>
-			<li class="mui-table-view-cell" onclick="shareAction('weixin','WXSceneSession');">
-				<div><img src="../images/share02.gif" /></div>
-				<p>微信</p>
-			</li>
-			<li class="mui-table-view-cell"  onclick="shareAction('weixin','WXSceneTimeline');">
-				<div><img src="../images/share03.gif" /></div>
-				<p>朋友圈</p>
-			</li>
-			<li class="mui-table-view-cell" onclick="shareAction('sinaweibo');">
-				<div><img src="../images/share04.gif" /></div>
-				<p>微博</p>
-			</li>
-			<li class="mui-table-view-cell" onclick="shareAction('qq');">
-				<div><img src="../images/share05.gif" /></div>
-				<p>QQ</p>
-			</li>
-		</ul>
-		<ul class="mui-table-view">
-			<li class="mui-table-view-cell">
-				<a href="#picture"><b>取消</b></a>
-			</li>
-		</ul>
-	</div>
-	
-	
-	<div id="down_list_popover_div"  class="mui-popover mui-popover-action mui-popover-bottom">
-			  <ul id="down-list-popover" class="mui-table-view"  >
-			  </ul>
-			  <ul class="mui-table-view">
-			  	<li class="mui-table-view-cell ">
-					<a href="#" onclick="download_list('down-list-popover')"><b>下载</b></a>
-				</li>
-			</ul>
-	</div>
-	<script type="text/html" id="popover-tpl">
-		<!--多个下载链接弹出-->
-		
-			  {{# for(var i = 0, len = d.length; i < len; i++){ }}
-				    <li class="mui-table-view-cell ">
-				       <div class="mui-input-row mui-checkbox  mui-left " style="{{d[i].flagexist?'width:80%':''}} ">
-						  <label class="label-table mui-text-left" >
-						  	{{d[i].FileName }}
-						  </label>
-						  <input style="height: 4em;line-height: 2em;overflow: hidden;"  downloadurl="{{d[i].FilePath}}" downloadname="{{ d[i].FileName }}" name="checkbox_download" value="" type="checkbox">
-				       </div>
-				       <button {{d[i].flagexist?'':'disabled=disabled'}}  type="button" onclick="openFile('{{d[i].FileName}}')" class="mui-btn-primary mui-btn mui-right {{d[i].flagexist?'':'mui-hidden'}}">查看</button>
-				    </li>
-				{{# } }}
-	</script>	
-	
-</body>
-	
 </html>

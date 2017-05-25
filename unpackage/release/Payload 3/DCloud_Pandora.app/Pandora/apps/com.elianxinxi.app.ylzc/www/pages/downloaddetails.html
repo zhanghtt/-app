@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no" />
+    
+    <title></title>
+    <script src="../js/mui.min.js"></script>
+    <link href="../css/mui.min.css" rel="stylesheet"/>
+    <link href="../css/zssg.css" rel="stylesheet"/>
+	<script type="text/javascript" charset="utf-8">
+var ws=null,embed=null,pageurl=null;
+mui.init({
+      		beforeback: function(){
+				//释放内存
+				plus.webview.close(embed);
+				embed = null;
+				
+				ws = null;
+				pageurl=null;
+				//返回true，继续页面关闭逻辑
+				return true;
+			}
+      	});
+// 扩展API加载完毕，现在可以正常调用扩展API 
+mui.plusReady(function(){
+	plus.nativeUI.closeWaiting();
+		ws=plus.webview.currentWebview();
+		var topoffset='44px';
+		if(plus.navigator.isImmersedStatusbar()){// 兼容immersed状态栏模式
+			topoffset=(Math.round(plus.navigator.getStatusbarHeight())+46)+'px';
+		}
+		pageurl=ws.pageurl;
+		
+		embed=plus.webview.create('local_fileview.html',"embed",{top:topoffset,bottom:"65px",scalable:true},{filepath:pageurl});
+		ws.append(embed);
+		document.getElementById("goback").addEventListener('tap',function () {
+			plus.webview.close(embed);
+			embed = null;
+			ws.close('slide-out-right');
+		});
+		mui('body').on('tap','.downxml',function() {
+				plus.runtime.openFile(pageurl)
+		});	
+})
+
+		</script>
+		<link rel="stylesheet" href="../css/common.css" type="text/css" charset="utf-8"/>
+		<style>
+        body{height:245px; overflow: hidden; background: url('../images/load1.gif') no-repeat center 200px; background-size: 80px;}
+        p.title{line-height: 30px; padding-left: 20px; padding-top: 20px;}
+    	li{display: inline-block; width: 23.9%; font-size:12px; height: 103px; margin: 0; padding: 0; text-align: center;}
+    	li.line{width:100%; height: 1px; background: #DDDDDD; margin: 0px;}
+    	li p{margin-top:10px;}
+    	li p img{padding:7px; background: #ffffff; width: 50px; -moz-border-radius: 10px;-webkit-border-radius: 10px;border-radius: 10px;}
+        li p span.iconfont {
+          background: #ffffff none repeat scroll 0 0;
+          border-radius: 10px;
+          color: #000;
+          display: block;
+          font-size: 1.8em;
+          height: 2em;
+          line-height: 2em;
+          margin: 0 auto;
+          transition: font-size 0.25s ease-out 0s;
+          width: 2em;
+      }
+      .cancel{background: #ffffff; line-height: 40px; text-align: center;font-size: 16px;}
+      .downbox { position: fixed; width: 100%; left: 0px; bottom: 0px; height: 44px; overflow: hidden;
+		 border-top: 1px solid #b2b2b2; padding: 0px; margin: 0px; background-image:linear-gradient(to bottom,#fff,#eee,#c4c4c4);}
+		.downbox > div { text-align: center;}
+		.downbox div a { display: block;}
+		.downbox div a p { color: #333;}
+		.downbox div span.mui-icon  { display: block; color: #08aa45; font-size: 28px; font-weight: bold; margin: 0px; padding: 0px;}
+    </style>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav" >
+			<a class="mui-icon mui-icon-back mui-pull-left" style="color: #fff;" id="goback"></a>
+			<h1 class="mui-title" id="header">易联招采</h1>
+		</header>
+		
+		<nav class="mui-bar mui-bar-tab downbox">
+			
+			<div class="downxml"><span class="mui-icon mui-icon-upload" ></span><p id="down">第三方打开</p></div>
+			
+		</nav>
+	</body>
+	<script type="text/javascript" src="../js/immersed.js" ></script>
+</html>

@@ -2,11 +2,11 @@
 	"@platforms": [
 		"android"
 	],
-	"description": "",
+	"description": "易联招采提供药品耗材供应领域信息化工作的专业咨询；为企业客户提供药械采购领域咨询、分析、决策服务。下载此APP，你可以实时接收最新最全的药械采购信息，让你不错过最新的采购信息、分析、决策。",
 	"developer": {
-		"email": "fu@yihaofang.com",
-		"name": "fu@yihaofang.com",
-		"url": ""
+		"email": "zhanghaitao@elian.net",
+		"name": "www.elian.net",
+		"url": "www.elian.net"
 	},
 	"id": "com.elianxinxi.app.ylzc",
 	"launch_path": "index.html",
@@ -22,9 +22,7 @@
 		"Device": {
 			"description": "\u8bbf\u95ee\u8bbe\u5907\u4fe1\u606f"
 		},
-		"Invocation": {
-			"description": "\u8c03\u7528Native.JS\u6865\u529f\u80fd"
-		},
+		"Invocation": {},
 		"Events": {
 			"description": "\u5ba2\u6237\u7aef\u6269\u5c55\u4e8b\u4ef6"
 		},
@@ -47,14 +45,15 @@
 		"XMLHttpRequest": {},
 		"Push": {},
 		"Share": {},
-		"Speech": {}
+		"Speech": {},
+		"Contacts": {}
 	},
 	"plus": {
 		"distribute": {
 			"apple": {
 				"devices": "",
 				"frameworks": [],
-				 "StatusBarBackground":"#0070bc"
+				"StatusBarBackground": "#0070bc"
 			},
 			"google": {
 				"aliasname": "",
@@ -62,9 +61,11 @@
 				"packagename": "yihaofang.yhf",
 				"password": "",
 				"permissions": [
+					"<uses-permission android:name=\"android.permission.GET_ACCOUNTS\"/>",
 					"<uses-permission android:name=\"android.permission.RECORD_AUDIO\"/>",
 					"<uses-permission android:name=\"android.permission.CHANGE_NETWORK_STATE\"/>",
 					"<uses-permission android:name=\"android.permission.MODIFY_AUDIO_SETTINGS\"/>",
+					"<uses-permission android:name=\"android.permission.READ_CONTACTS\"/>",
 					"<uses-permission android:name=\"android.permission.GET_TASKS\"/>",
 					"<uses-permission android:name=\"android.permission.CHANGE_WIFI_STATE\"/>",
 					"<uses-permission android:name=\"android.permission.READ_PHONE_STATE\"/>",
@@ -74,6 +75,7 @@
 					"<uses-permission android:name=\"android.permission.CALL_PHONE\"/>",
 					"<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\"/>",
 					"<uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\"/>",
+					"<uses-permission android:name=\"android.permission.WRITE_CONTACTS\"/>",
 					"<uses-feature android:name=\"android.hardware.camera\"/>",
 					"<uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\"/>",
 					"<uses-permission android:name=\"android.permission.RECEIVE_USER_PRESENT\"/>",
@@ -88,7 +90,8 @@
 					"ldpi": "unpackage/res/icons/48x48.png",
 					"mdpi": "unpackage/res/icons/48x48.png",
 					"xhdpi": "unpackage/res/icons/96x96.png",
-					"xxhdpi": "unpackage/res/icons/144x144.png"
+					"xxhdpi": "unpackage/res/icons/144x144.png",
+					"xxxhdpi": "unpackage/res/icons/192x192.png"
 				},
 				"ios": {
 					"ipad": {
@@ -153,11 +156,14 @@
 			"debug": false,
 			"plugins": {
 				"share": {
-					"qq": {"appid":"1105162405","description":"QQ分享"},
+					"qq": {
+						"appid": "1105162405",
+						"description": "QQ分享"
+					},
 					"sina": {
 						"appkey": "64447369",
 						"appsecret": "f71ccb2b0e20b4dd359b0730eec39f57",
-						"redirect_uri": "http://www.elianxinxi.com",
+						"redirect_uri": "http://www.elian.net",
 						"description": "可选，新浪微博分享"
 					},
 					"weixin": {
@@ -184,11 +190,12 @@
 			"autoclose": true,
 			"delay": "0",
 			"waiting": true
-		},"runmode":"liberate"
+		},
+		"runmode": "liberate"
 	},
 	"version": {
-		"code": 1415,
-		"name": "1.415"
+		"code": 1423,
+		"name": "1.417"
 	},
 	"fullscreen": true,
 	"dependencies": {
@@ -217,7 +224,8 @@
 					"pages/user_changepwd.html",
 					"pages/findpwd.html",
 					"pages/login_register.html",
-					"pages/trash_user_cache.html"
+					"pages/trash_user_cache.html",
+					"pages/web_notice.html"
 				]
 			},
 			"pages/register_user_data.html": {
@@ -453,7 +461,8 @@
 					"css/iconfont.css",
 					"fonts/iconfont.ttf",
 					"js/ajax.js",
-					"icon/icon.png"
+					"icon/icon.png",
+					"images/personal_icon_web_notice@3x.png"
 				],
 				"refer": [
 					"pages/login.html",
@@ -938,6 +947,39 @@
 				],
 				"refer": [],
 				"priority": 0
+			},
+			"pages/web_notice.html": {
+				"resources": [
+					"js/g/webnoticeUtils.js"
+				],
+				"refer": [
+					"pages/web_notice_detail.html"
+				],
+				"priority": 0
+			},
+			"pages/web_notice_detail.html": {
+				"resources": [
+					"images/share01.gif",
+					"js/pinchzoom.min.js",
+					"js/laytpl.js",
+					"fonts/mui.ttf",
+					"js/mui.lazyload.js",
+					"images/share04.gif",
+					"images/share03.gif",
+					"js/mui.lazyload.img.js",
+					"js/enc-base64.js",
+					"images/share05.gif",
+					"images/share02.gif",
+					"js/mui.min.js",
+					"js/jquery-1.11.1.min.js",
+					"css/mui.min.css",
+					"js/share.js",
+					"js/ajax.js",
+					"js/core.js",
+					"css/zssg.css"
+				],
+				"refer": [],
+				"priority": 0
 			}
 		},
 		"idle": {
@@ -1001,62 +1043,62 @@
 			]
 		}
 	},
-	"unpackage":[
-	  "css/mui.css",
-	  "fonts/changepwd.html",
-	  "icon/bmdh.png",
-	  "icon/changyongdianhua.png",
-	  "icon/fang.png",
-	  "icon/gjj.png",
-	  "icon/gongjiao.png",
-	  "icon/gongjijin.png",
-	  "icon/guahao.png",
-	  "icon/guahao1.png",
-	  "icon/hangban.png",
-	  "icon/hcp.png",
-	  "icon/huodong.png",
-	  "icon/iconfont-chongzhi.png",
-	  "icon/jingdian.png",
-	  "icon/jiudian.png",
-	  "icon/kaixinluntan.png",
-	  "icon/keche.png",
-	  "icon/pm25.png",
-	  "icon/pm251.png",
-	  "icon/qlh.png",
-	  "icon/tianqi.png",
-	  "icon/tqyb.png",
-	  "icon/weizhang.png",
-	  "icon/wnl.png",
-	  "icon/wz.png",
-	  "icon/xinwen.png",
-	  "icon/yingyun.png",
-	  "icon/zxc.png",
-	  "images/blank.gif",
-	  "images/blank.png",
-	  "images/bmfw.jpg",
-	  "images/icons.jpg",
-	  "images/index_top.jpg",
-	  "images/logo.png",
-	  "images/logo_108x108.jpg",
-	  "images/logo_250x250.jpg",
-	  "images/logo_28x28.jpg",
-	  "images/pm.jpg",
-	  "images/qq.png",
-	  "images/service.png",
-	  "images/sgrbloding.jpg",
-	  "images/sinaweibo.png",
-	  "images/talk.png",
-	  "images/tqbg.jpg",
-	  "images/userimg.png",
-	  "images/weixin.png",
-	  "js/feedback.js",
-	  "js/g/icon-refresh.png",
-	  "js/mui.enterfocus.js",
-	  "js/mui.view.js",
-	  "js/setting.js",
-	  "js/swiper.min.js",
-	  "js/update.js",
-	  "pages/images/blank.gif",
-	  "pages/images/blank.png"
+	"unpackage": [
+		"css/mui.css",
+		"fonts/changepwd.html",
+		"icon/bmdh.png",
+		"icon/changyongdianhua.png",
+		"icon/fang.png",
+		"icon/gjj.png",
+		"icon/gongjiao.png",
+		"icon/gongjijin.png",
+		"icon/guahao.png",
+		"icon/guahao1.png",
+		"icon/hangban.png",
+		"icon/hcp.png",
+		"icon/huodong.png",
+		"icon/iconfont-chongzhi.png",
+		"icon/jingdian.png",
+		"icon/jiudian.png",
+		"icon/kaixinluntan.png",
+		"icon/keche.png",
+		"icon/pm25.png",
+		"icon/pm251.png",
+		"icon/qlh.png",
+		"icon/tianqi.png",
+		"icon/tqyb.png",
+		"icon/weizhang.png",
+		"icon/wnl.png",
+		"icon/wz.png",
+		"icon/xinwen.png",
+		"icon/yingyun.png",
+		"icon/zxc.png",
+		"images/blank.gif",
+		"images/blank.png",
+		"images/bmfw.jpg",
+		"images/icons.jpg",
+		"images/index_top.jpg",
+		"images/logo.png",
+		"images/logo_108x108.jpg",
+		"images/logo_250x250.jpg",
+		"images/logo_28x28.jpg",
+		"images/pm.jpg",
+		"images/qq.png",
+		"images/service.png",
+		"images/sgrbloding.jpg",
+		"images/sinaweibo.png",
+		"images/talk.png",
+		"images/tqbg.jpg",
+		"images/userimg.png",
+		"images/weixin.png",
+		"js/feedback.js",
+		"js/g/icon-refresh.png",
+		"js/mui.enterfocus.js",
+		"js/mui.view.js",
+		"js/setting.js",
+		"js/swiper.min.js",
+		"js/update.js",
+		"pages/images/blank.gif",
+		"pages/images/blank.png"
 	]
 }

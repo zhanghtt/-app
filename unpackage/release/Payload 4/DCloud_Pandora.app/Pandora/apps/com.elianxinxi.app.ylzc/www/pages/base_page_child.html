@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"  content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title></title>
+    <script src="../js/mui.min.js"></script>
+    <link href="../css/mui.min.css" rel="stylesheet"/>
+    <link href="../css/zssg.css" rel="stylesheet"/>
+    <script src="../js/core.js"></script>
+    <script src="../js/enc-base64.js"></script>
+    <script src="../js/jquery-1.11.1.min.js"></script>
+    <script src="../js/ajax.js"></script>
+    <script type="text/javascript" src="../js/share.js" ></script>
+    <script type="text/javascript" src="../js/laytpl.js" ></script>
+    <script src="../js/mui.zoom.js"></script>
+	<script src="../js/mui.previewimage.js"></script>
+	<script src="../js/mui.lazyload.js"></script>
+	<script src="../js/mui.lazyload.img.js"></script>
+    <!--<script type="text/javascript" src="../js/pinchzoom.min.js" ></script>-->
+    <script type="text/javascript" charset="UTF-8">
+      	mui.init(
+	      		{
+	      		beforeback: function(){
+					//释放内存
+					releasePinchZoomArr();
+					user = null;
+					currentPath = null;
+					title = null;
+					atitle = null;
+					downurl = null;
+					downMsg=null;
+					share_thumb = null;
+					ws = null;
+					news = null;
+					document.body.innerHTML = '';
+					//返回true，继续页面关闭逻辑
+					return true;
+					}
+	      		}
+      		);
+        var news = null;
+      	var showed=0;
+      	var title=null,shareurl=null;
+      	var atitle = null;
+      	var downurl = null;
+      	var downMsg = null;
+      	var sourceurl = null;
+      	var user=null;
+      	var currentPath=null ;
+      	var imgArr= [];
+      	var share_thumb="http://www.elianxinxi.com/logo.png",description="分享来自易联招采";
+      	
+      	
+      	//  http://www.elianxinxi.com/logo.ico
+      	// 扩展API加载完毕，现在可以正常调用扩展API
+      	function plusReady(){
+      		news = plus.webview.getWebviewById('news');
+      	    user = judgeLogin();
+      	    currentPath = download_path+user.phoneNumber+"/"
+      		plus.nativeUI.closeWaiting();//关闭等待框
+      		ws=plus.webview.currentWebview();//给当前页面命名
+      		pageurl = ws.pageurl;
+      		token = ws.usertoken;
+      		transtime = ws.transtime;
+      		ChannelID = ws.pagechannelid;
+      		ArticleID = ws.pagearticleid;
+      		atitle = ws.atitle
+      		//确定是否需要更新badge的代理
+      		if(ws.updateBage){
+      			mui.fire(plus.webview.getLaunchWebview(),'updateBadge')
+      		}
+      		
+      		getcontent();
+      		updateSerivces();//分享设置
+      		// 侧滑返回后关闭webview
+			//添加到收藏列表
+			document.getElementById("addCollection").addEventListener('tap',function() {
+				addCollectionArticle();
+			});
+			mui('body').on('tap','.downxml',function() {
+				//渲染下载列表
+					refreshpopuwindow(true)
+			})
+			document.getElementById("sourcename").addEventListener('tap',function() {
+				if (sourceurl) {
+					plus.runtime.openURL(sourceurl);
+				}else {
+					mui.toast('来源网址为空');
+				}
+			});
+      	}
+// 判断扩展API是否准备，否则监听"plusready"事件
+if(window.plus){
+	plusReady();
+}else{
+	document.addEventListener("plusready",plusReady,false);
+}
+
+function releasePinchZoomArr(){
+	for(var index in imgArr){
+			var img =  imgArr[index]
+			img.src = '';
+			img.parentNode.removeChild(img);
+		}
+		imgArr = null;
+//	for(var index in PinchZoomArr){
+//		var pinzoom = PinchZoomArr[index];
+//		pinzoom = null;
+//	}
+//	PinchZoomArr =null;
+	
+}
+
+
+function refreshpopuwindow(option_toggle){
+	var down_list_popover =  document.getElementById('down-list-popover').innerHTML;
+      				var popover_tpl = document.getElementById('popover-tpl').innerHTML;
+      				
+      				mui.each(downMsg,function(index){
+      					
+					  	var relativePath = currentPath +this.FileName
+					  	plus.io.resolveLocalFileSystemURL(relativePath,function(entry) {
+					  		handlerLastAsync(true,index,downMsg,popover_tpl,option_toggle)
+					  	},function(e){
+		      				handlerLastAsync(false,index,downMsg,popover_tpl,option_toggle)
+		      			});
+		      			//this.flagexist =flagexist;
+      				})
+}
+
+function handlerLastAsync(flag,index,downMsg,popover_tpl,option_toggle){
+	downMsg[index].flagexist=flag;
+	if(index==downMsg.length-1){
+		laytpl(popover_tpl).render(downMsg,function(h){
+						document.getElementById('down-list-popover').innerHTML = h;
+						if(option_toggle){
+							mui('#down_list_popover_div').popover('toggle');//show hide toggle
+						}
+					});	
+	}
+}
+
+function createDownload(url,fileName) {
+	
+	plus.nativeUI.showWaiting('', {
+		padlock: true
+	});
+	var dtask = plus.downloader.createDownload(url,{filename:currentPath+fileName},function ( d, status ){
+		// 下载完成
+		if ( status == 200 ) { 
+			plus.nativeUI.closeWaiting();
+			plus.nativeUI.toast( "下载成功: " + d.filename );
+			var filename = d.filename;
+			
+		} else {
+			plus.nativeUI.closeWaiting();
+			plus.nativeUI.toast( "下载失败: " + status ); 
+		}  
+	});
+		dtask.start(); 
+}
+
+//检查文件是否存在
+function judgeFileIsExists(fileName,downurl) {
+	var relativePath = currentPath+ fileName;
+	//检查是否存在
+	plus.io.resolveLocalFileSystemURL(relativePath,function(entry) {
+		plus.nativeUI.toast( "文件已经存在")
+	},function(e) {
+		createDownload(downurl,fileName)
+	});
+	
+};
+
+function mutiDownload(downloadlist) {
+	plus.nativeUI.showWaiting('正在下载', {
+		padlock: true
+	});
+	var flagdownall=downloadlist.length;
+	
+	mui.each(downloadlist,function(){
+		var downloadname = this.downloadname;
+		var task = plus.downloader.createDownload(host+this.downloadurl,{filename:currentPath+downloadname},function ( d, status ){
+			// 下载完成
+		if ( status == 200 ) { 
+			var filename = d.filename;
+			plus.nativeUI.toast( downloadname+"下载成功");
+			
+		} else {
+			plus.nativeUI.toast( "下载失败: " + status ); 
+		}  
+		
+		if(flagdownall==1){
+			plus.nativeUI.closeWaiting();
+			refreshpopuwindow(false);
+		}
+		flagdownall--;
+		});
+		task.start()
+	})
+}
+
+function download_list(listId){
+	var checkedlist = [];
+	//var tasks=[];
+	mui("#"+listId+" input[name=checkbox_download]").each(function(){
+		if(this.checked==true){
+			//downloadname downloadurl
+			var downloadname = this.getAttribute("downloadname")
+			var downloadurl = this.getAttribute("downloadurl")
+			checkedlist.push({downloadname:downloadname,downloadurl:downloadurl})
+		   }
+		}
+);
+if(checkedlist.length==0){
+	mui.toast("请先选择下载项")
+	return;
+}
+mutiDownload(checkedlist)
+}
+
+
+
+function getcontent() {
+	plus.nativeUI.showWaiting('', {
+		padlock: true
+	});
+	mui.ajax(pageurl,{
+		data:{
+			token:token,
+			transtime:transtime,
+			ChannelID:ChannelID,
+			ArticleID:ArticleID
+		},
+		dataType:'json',
+		type:'post',
+		timeout:10000,
+		success:function(data_){
+			plus.nativeUI.closeWaiting();
+			data = JSON.parse(data_);
+			data_ = null;
+			if (data.result == 1){
+				//通知news更新状态
+				//ChannelID
+				 //触发详情页面的newsId事件
+				 //mui.alert("news:"+news==null+" id:"+id)
+				  mui.fire(news,'updateStatus',{
+				    id:ArticleID
+				  });
+				
+				title = data.Title;
+				sourceurl = data.Sourceurl;
+				shareurl = data.ShowUrl;
+				document.getElementById("htitle").innerHTML = atitle;
+				document.getElementById("title").innerHTML = data.Title;
+				document.getElementById("sourcename").innerHTML = data.Source;
+				document.getElementById("addtime").innerHTML = data.AddTime;
+				var words  = CryptoJS.enc.Base64.parse(data.Content);
+				document.getElementById("content").innerHTML = words.toString(CryptoJS.enc.Utf8);
+				delete words;
+				CryptoJS = null;
+				//$("#content img").wrap("<div class='contenttable'></div>")
+				$('#content img').each(function(){
+							var imgsrc = this.src;
+							this.setAttribute("data-lazyload",imgsrc); this.src = "";
+							$(this).css({"height":"30vh","width":"90vw"}).attr("data-preview-src","").attr("data-preview-group","1");
+							imgArr.push(this);
+					})
+				mui("#content").imageLazyload({
+					placeholder: '../images/60x60.gif'
+				});
+				mui.previewImage();
+				$("#content table").wrap("<div class='contenttable'></div>")
+				
+//				if($("#content table,img").size()<5){
+//					PinchZoomArr.push(new RTP.PinchZoom($('#content'), {}));
+//				}else{
+//					$("#content table").wrap("<div class='contenttable'></div>")
+//					$("#content img").wrap("<div class='contenttable'></div>")
+//					$('.contenttable').each(function(){
+//						if(this.childNodes[0].width!='0'){
+//							imgArr.push(this);
+//							PinchZoomArr.push(new RTP.PinchZoom($(this), {}))
+//						}
+//					})
+//				}
+				
+				var downloader = data.ArticleAttach[0] ? data.ArticleAttach[0] : null;
+				downMsg = data.ArticleAttach;
+				if (downloader && downloader.FilePath){
+					downurl = downloader.FilePath;
+					var nav = document.createElement('nav');
+					nav.className = 'mui-bar mui-bar-tab downbox';
+					nav.innerHTML = '<div class="downxml"><span class="mui-icon mui-icon-download" ></span><p id="down">附件下载</p></div>'
+					var body_content = document.body;
+					body_content.appendChild(nav);
+				}
+				data = null,downloader=null;
+			}else {
+				plus.nativeUI.closeWaiting();
+				plus.nativeUI.toast(data.message);
+			}
+		},
+		error:function(xhr,type,errorThrown){
+			//异常处理；
+			plus.nativeUI.closeWaiting();
+			mui.toast("请求出错");
+		}
+	});
+}
+function addCollectionArticle() {
+	mui.ajax(ajax_addCollectionURl,{
+		data:{
+			token:token,
+			transtime:transtime,
+			ArticleID:ArticleID
+		},
+		dataType:'json',
+		type:'post',
+		timeout:10000,
+		success:function(data){
+			
+			data = JSON.parse(data);
+			if (data.result == 1){
+				mui.toast(data.message);
+			}else {
+				mui.toast('添加收藏失败');
+			}
+			data = null;
+		},
+		error:function(xhr,type,errorThrown){
+			//异常处理；
+			mui.toast("请求出错");
+		}
+	});
+}
+
+function openFile(fileName){
+	//console.log(fileName)
+	//plus.runtime.openURL(fileName)
+	var relativePath = currentPath + fileName;
+	if(fileName.endWith('.zip')||fileName.endWith('.rar')||(!mui.os.ios)){
+		plus.runtime.openFile(relativePath)
+  		return;
+	}
+		  mui.openWindow({
+					id: 'downloaddetail',
+					url: 'downloaddetails.html',
+					styles: {
+						top: 0,
+						bottom: 0,
+						bounce: 'none',
+    					popGesture: 'close' // 'hide', 'close','none'
+					},
+					 extras:{
+					 	pageurl:relativePath,
+					 },
+					 waiting:{
+					 	autoShow:false,
+					 },
+					createNew:false,//是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+				});
+}
+
+    </script>
+    <style>
+		body { padding-bottom: 60px;}
+		body,p,div { color: #666;}
+		.colletion_main { margin: 15px 7px 60px 7px;}
+     	.colletion_main h6 { font-size: 18px; color: #333; line-height: 22px; margin: 0px;}
+     	.colletion_main div.tit { border-bottom: 1px solid #c9c9c9; margin-bottom: 15px;}
+     	.colletion_main div.tit p { margin: 10px 0px 10px; color: #999;}
+     	.colletion_main div.tit span:nth-of-type(1) { display: inline-block; padding: 0px 13px; margin-right: 10px; height: 22px; line-height: 22px; color: #fff; background-color: #08aa45;
+		 border-radius: 30px;}
+		.colletion_main .con { line-height: 24px; overflow-x:scroll;}
+		#picture .shareul { background-color: #fff}
+		#picture .shareul li { float: left; width: 33%; text-align: center;}
+		#picture .shareul li:after { height: 0px;}
+		#picture .shareul li div { margin: 0px auto 5px;}
+		#picture ul li div img { display: block; width: 70%; max-width: 100px; margin: 0px auto;}
+		#picture ul li p { color: #333; height: 24px; line-height: 24px; font-size: 14px;}
+		.downbox { position: fixed; width: 100%; left: 0px; bottom: 0px; height: 44px; overflow: hidden;
+		 border-top: 1px solid #b2b2b2; padding: 0px; margin: 0px; background-image:linear-gradient(to bottom,#fff,#eee,#c4c4c4);}
+		.downbox > div { text-align: center;}
+		.downbox div a { display: block;}
+		.downbox div a p { color: #333;}
+		.downbox div span.mui-icon  { display: block; color: #08aa45; font-size: 28px; font-weight: bold; margin: 0px; padding: 0px;}
+		.mui-bar-nav a { color: #fff;}
+		.label-table{
+		    line-height:1.8em;
+		    font-size: 0.7em;
+		    /* 3 times the line-height to show 3 lines */
+		    height:4em;
+					}
+		#content{
+			overflow-x:hidden;
+			line-height:1.8em;
+		    font-size: 0.7em;
+		}
+		.contenttable{
+		overflow: scroll;
+		max-width: 100%;
+		max-height: 80vh;
+		}
+		
+			.mui-preview-image.mui-fullscreen {
+				position: fixed;
+				z-index: 20;
+				background-color: #000;
+			}
+			.mui-preview-header,
+			.mui-preview-footer {
+				position: absolute;
+				width: 100%;
+				left: 0;
+				z-index: 10;
+			}
+			.mui-preview-header {
+				height: 44px;
+				top: 0;
+			}
+			.mui-preview-footer {
+				height: 50px;
+				bottom: 0px;
+			}
+			.mui-preview-header .mui-preview-indicator {
+				display: block;
+				line-height: 25px;
+				color: #fff;
+				text-align: center;
+				margin: 15px auto 4;
+				width: 70px;
+				background-color: rgba(0, 0, 0, 0.4);
+				border-radius: 12px;
+				font-size: 16px;
+			}
+			.mui-preview-image {
+				display: none;
+				-webkit-animation-duration: 0.5s;
+				animation-duration: 0.5s;
+				-webkit-animation-fill-mode: both;
+				animation-fill-mode: both;
+			}
+			.mui-preview-image.mui-preview-in {
+				-webkit-animation-name: fadeIn;
+				animation-name: fadeIn;
+			}
+			.mui-preview-image.mui-preview-out {
+				background: none;
+				-webkit-animation-name: fadeOut;
+				animation-name: fadeOut;
+			}
+			.mui-preview-image.mui-preview-out .mui-preview-header,
+			.mui-preview-image.mui-preview-out .mui-preview-footer {
+				display: none;
+			}
+			.mui-zoom-scroller {
+				position: absolute;
+				display: -webkit-box;
+				display: -webkit-flex;
+				display: flex;
+				-webkit-box-align: center;
+				-webkit-align-items: center;
+				align-items: center;
+				-webkit-box-pack: center;
+				-webkit-justify-content: center;
+				justify-content: center;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				top: 0;
+				width: 100%;
+				height: 100%;
+				margin: 0;
+				-webkit-backface-visibility: hidden;
+			}
+			.mui-zoom {
+				-webkit-transform-style: preserve-3d;
+				transform-style: preserve-3d;
+			}
+			.mui-slider .mui-slider-group .mui-slider-item img {
+				width: auto;
+				height: auto;
+				max-width: 100%;
+				max-height: 100%;
+			}
+			.mui-android-4-1 .mui-slider .mui-slider-group .mui-slider-item img {
+				width: 100%;
+			}
+			.mui-android-4-1 .mui-slider.mui-preview-image .mui-slider-group .mui-slider-item {
+				display: inline-table;
+			}
+			.mui-android-4-1 .mui-slider.mui-preview-image .mui-zoom-scroller img {
+				display: table-cell;
+				vertical-align: middle;
+			}
+			.mui-preview-loading {
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				top: 0;
+				left: 0;
+				display: none;
+			}
+			.mui-preview-loading.mui-active {
+				display: block;
+			}
+			.mui-preview-loading .mui-spinner-white {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				margin-left: -25px;
+				margin-top: -25px;
+				height: 50px;
+				width: 50px;
+			}
+			.mui-preview-image img.mui-transitioning {
+				-webkit-transition: -webkit-transform 0.5s ease, opacity 0.5s ease;
+				transition: transform 0.5s ease, opacity 0.5s ease;
+			}
+			@-webkit-keyframes fadeIn {
+				0% {
+					opacity: 0;
+				}
+				100% {
+					opacity: 1;
+				}
+			}
+			@keyframes fadeIn {
+				0% {
+					opacity: 0;
+				}
+				100% {
+					opacity: 1;
+				}
+			}
+			@-webkit-keyframes fadeOut {
+				0% {
+					opacity: 1;
+				}
+				100% {
+					opacity: 0;
+				}
+			}
+			@keyframes fadeOut {
+				0% {
+					opacity: 1;
+				}
+				100% {
+					opacity: 0;
+				}
+			}
+			p img {
+				max-width: 100%;
+				height: auto;
+			}
+	</style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav">
+	    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" style="color: #fff;"></a>
+	    <h1 class="mui-title" id="htitle"></h1>
+	    <a class="mui-icon mui-icon-more mui-pull-right " href="#picture"></a>
+	</header>
+	
+	<!--主体部分-->
+	<div class="mui-content colletion_main">
+		<div class="tit">
+			<h6 id="title"></h6>
+			<p><span  style="max-width:70%;overflow: hidden;" id="sourcename"></span><span style="float: right;" id="addtime"></span></p>
+		</div>
+		<div class="con overflow-container">
+			<div class="div_content" id="content">
+				
+			</div>
+		</div>
+	</div>
+	
+	<!--附件下载-->	
+	
+		
+	<!--底部弹出内容-->
+	<div id="picture" class="mui-popover mui-popover-action mui-popover-bottom">
+		<ul class="mui-table-view shareul">
+			<li class="mui-table-view-cell" id="addCollection">
+				<div><img src="../images/share01.gif" /></div>
+				<p>收藏</p>
+			</li>
+			<li class="mui-table-view-cell" onclick="shareAction('weixin','WXSceneSession');">
+				<div><img src="../images/share02.gif" /></div>
+				<p>微信</p>
+			</li>
+			<li class="mui-table-view-cell"  onclick="shareAction('weixin','WXSceneTimeline');">
+				<div><img src="../images/share03.gif" /></div>
+				<p>朋友圈</p>
+			</li>
+			<li class="mui-table-view-cell" onclick="shareAction('sinaweibo');">
+				<div><img src="../images/share04.gif" /></div>
+				<p>微博</p>
+			</li>
+			<li class="mui-table-view-cell" onclick="shareAction('qq');">
+				<div><img src="../images/share05.gif" /></div>
+				<p>QQ</p>
+			</li>
+		</ul>
+		<ul class="mui-table-view">
+			<li class="mui-table-view-cell">
+				<a href="#picture"><b>取消</b></a>
+			</li>
+		</ul>
+	</div>
+	
+	
+	<div id="down_list_popover_div" class="mui-popover mui-popover-action mui-popover-bottom">
+			  <ul id="down-list-popover" class="mui-table-view">
+			  </ul>
+			  <ul class="mui-table-view">
+			  	<li class="mui-table-view-cell ">
+					<a href="#" onclick="download_list('down-list-popover')"><b>下载</b></a>
+				</li>
+			</ul>
+	</div>
+	<script type="text/html" id="popover-tpl">
+		<!--多个下载链接弹出-->
+		
+			  {{# for(var i = 0, len = d.length; i < len; i++){ }}
+				    <li class="mui-table-view-cell ">
+				       <div class="mui-input-row mui-checkbox  mui-left " style="{{d[i].flagexist?'width:80%':''}} ">
+						  <label class="label-table mui-text-left" >
+						  	{{d[i].FileName }}
+						  </label>
+						  <input style="height: 4em;line-height: 2em;overflow: hidden;"  downloadurl="{{d[i].FilePath}}" downloadname="{{ d[i].FileName }}" name="checkbox_download" value="" type="checkbox">
+				       </div>
+				       <button {{d[i].flagexist?'':'disabled=disabled'}}  type="button" onclick="openFile('{{d[i].FileName}}')" class="mui-btn-primary mui-btn mui-right {{d[i].flagexist?'':'mui-hidden'}}">查看</button>
+				    </li>
+				{{# } }}
+	</script>	
+	
+</body>
+	
+</html>

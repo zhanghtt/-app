@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>易联招采</title>
+    
+    <link rel="stylesheet" type="text/css" href="css/swiper.min.css">
+    <link href="css/mui.min.css" rel="stylesheet"/>
+    <link href="css/zssg.css" rel="stylesheet"/>
+    <link href="css/iconfont.css" rel="stylesheet" />
+    <style>
+	    a{cursor: pointer;}
+	    header .mui-icon{color:#ffffff}
+	    .hidden{display: none;}
+	    .mui-bar-nav .mui-title {
+   			color: white;
+   		}
+	    .mui-bar-nav .avatar img {
+   			margin-top: 10px;
+   			width: 24px;
+   			height: 24px;
+   			border-radius: 50%;
+   			float: left;
+   		}
+   		.mui-bar-nav .mui-pull-right img {
+   			margin-top: 10px;
+   			width: 24px;
+   			height: 24px;
+   			border-radius: 50%;
+   			float: right;
+   		}
+   		.mui-bar-nav .mui-pull-right .mui-badge {
+   			margin-left: 1px;
+   			background-color: red;
+   			width: 12px;
+   			height: 12px;
+   		}
+   		
+   		 p { color: #666; margin: 0px; padding: 0px;}
+     .ppinputdiv { position: absolute; width: 70%; left: 15%; top: 7px; height: 30px;}	
+     .ppinputdiv #shaminput { z-index: 10; display: block; position: absolute; width: 100%; height: 30px; line-height: 30px; margin: 0px; padding: 0px; background-color:transparent;}
+     .ppinputdiv input { height: 30px; border: none; color: #333; font-size: 14px; padding: 0px; padding-left: 30px;}	
+     .ppinputdiv input::-webkit-input-placeholder { color: #999; font-size: 14px;}
+     .ppinputdiv #ppserchbtn { z-index: 9; display: block; position: absolute; left: 0px; top: 0px; color: #000; width: 30px; height: 30px; text-align: center;
+      padding: 0px;margin: 0px; border: none;}
+      #message .mui-badge { display: inline-block; position: absolute; left: auto; right: 2px; top: 3px; padding: 2px 5px; color: #fff;box-sizing: content-box; width: auto;}
+     #message .pphidden { display: none !important;}
+     #ppserchpic {}
+     #ppserchpic img { width: 30px; margin-top: 7px;}
+    </style>
+    <script data-main="js/index/index.js" type="text/javascript" src="js/requirejs/require-2.1.11.js" ></script>
+</head>
+<body>
+	<!--启动页-->
+	<div id="fristpage">
+	   	<div style="position:absolute; width:100%; height:100%; z-index:9999" >
+	   		<img id="qidongye" src="images/qidongye.png"  width="100%" height="100%" style="position:fixed;">
+    		</div>
+	 </div>
+	   <!--头部-->
+	    <header class="mui-bar mui-bar-nav">
+	    		<span class="avatar mui-pull-left" id="avator">
+	    			<img src="images/avatar.jpg" id="headImg_index"/>
+	    		</span>
+			<div  id="ppinputdiv" class="ppinputdiv mui-input-row"><span id="shaminput"></span><input type="text" class="mui-input-clear" placeholder="请输入您要搜索的内容"  /><button type="submit" id="ppserchbtn" class="mui-icon mui-icon-search"></button></div>
+			<span class="mui-pull-right" id="message">
+				<img src="images/nav_icon_news@2x.png" />
+				<span class="mui-badge" id="badge"></span>
+			</span>
+		</header>
+		<!--底部-->
+		<nav class="mui-bar mui-bar-tab" id="plist">
+			<a class="mui-tab-item mui-active" id="pages/news.html" page-title="资讯信息">
+				<span class="mui-icon iconfont icon-info"></span>
+				<span class="mui-tab-label">资讯信息</span>
+			</a>
+			<a class="mui-tab-item" id="pages/timeindex.html" page-title="时间安排">
+				<span class="mui-icon iconfont icon-rili"></span>
+				<span class="mui-tab-label">时间安排</span>
+			</a>
+			<a class="mui-tab-item" id="pages/analysis.html" page-title="深度分析">
+				<span class="mui-icon iconfont icon-fangdajing"></span>
+				<span class="mui-tab-label">深度分析</span>
+			</a>
+			<a class="mui-tab-item" id="pages/user.html">
+				<span class="mui-icon iconfont icon-touxiang"></span>
+				<span class="mui-tab-label">我的易联</span>
+			</a>
+		</nav>
+    </div>
+
+</body>
+</html>

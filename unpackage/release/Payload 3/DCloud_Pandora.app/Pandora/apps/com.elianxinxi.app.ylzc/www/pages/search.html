@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>搜索页面</title>
+     <link href="../css/mui.min.css" rel="stylesheet"/>
+     <link href="../css/mystyle.css" rel="stylesheet" />
+     <style>
+     body { padding-top: 116px; color: #333;}
+     .ppinputdiv { position: absolute; width: 70%; left: 15%; top: 7px; height: 30px;}	
+     .ppinputdiv input { height: 30px; border: none; color: #333; font-size: 14px; padding: 0px; text-indent: 10px;}	
+     .ppinputdiv input::-webkit-input-placeholder { color: #999; font-size: 14px;}
+     .serch_tit { z-index: 998; position: fixed; left: 0px; top: 42px; width: 100%; height: 42px; border-top: 15px solid #efeff4;}
+     .serch_tit > div { margin: 0px 15px; border:1px solid  #0070bc; height: 40px; box-sizing:content-box;}
+     .serch_tit div span { float: left; width: 33.3%; text-align: center; line-height: 40px;box-sizing:border-box; background-color: #fff; color: #0070bc}
+     .serch_tit div .border-right { border-right:1px solid  #0070bc;}
+     .serch_tit div #date{
+     	/*border-right:1px solid  #0070bc;*/
+     }
+	 .serch_tit div span.on { background-color: #0070bc; color: #fff;}
+	 .serch_con { margin: 0px 10px 0px;}
+	 .serch_con ul { list-style: none; padding: 0px; margin: 0px; width: 100%;}
+	 .serch_con .con { display: none;}
+	 .serch_con  ul  li { float: left; height: 32px; line-height: 32px; width: 33%;box-sizing:border-box;
+	  text-align: center; margin: 0px 0px 8px; padding: 0px;}
+	  .serch_con  ul  li.division_line { clear: both; float: none; width: 100%; height: 11px; margin-bottom: 10px; line-height: 0px; font-size: 0px;}
+	  .serch_con  ul  li.division_line div { height: 10px; padding: 0px; margin: 0px 5px 0px; border: none; border-bottom: 1px dashed #888;}
+	  .serch_con> ul> li span { display: block; height: 32px;}
+	  .serch_con li:nth-of-type(3n-1) { width: 34%;}
+	  .serch_con ul li span { display: block; border: 1px solid #888; margin: 0px 5px; font-weight: normal;}
+     .hotserch { clear: both; margin: 0px 15px 0px; padding: 15px 0px 0px;}
+     .hotserch .tit { position: relative; font-size: 16px; font-weight: bold; height: 26px; line-height: 26px; padding: 0px 0px 6px; border-bottom: 1px solid #888;
+     margin: 0px 0px 5px; box-sizing: content-box;}
+     .hotserch span { font-weight: normal;float: left; height: 28px; line-height: 28px; width: 33%;box-sizing:border-box;}
+     #clearhistory { display: inline-block; float: none; position: absolute; right: 0px; top: 0px; width: 60px; text-align: right; color: #f00; }
+     
+     
+     </style>
+   
+    <link rel="stylesheet" type="text/css" href="../css/mui.picker.min.css" />
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav">
+	    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+	    <div class="ppinputdiv"><input type="text" placeholder="请输入您要搜索的内容"  id="searchContent"/></div>
+	    <a class="mui-icon mui-icon-search mui-pull-right" id="searchBtn"></a>
+	</header>
+	<body>
+	<div class="serch_tit">
+		<div>			
+			<span  class="on border-right" id="area" data-areaid="">选择省份</span>
+			<span id="dictype" class="border-right" data-areaid="">选择栏目</span>		
+			<span id="date" data-areaid="0">选择日期</span>		
+		</div>
+	</div>
+	<div class="serch_con">
+		<div class="con">
+			<ul id="topMenu">				
+				<li><span val="北京市" data-areaid="110000">北京市</span></li>
+				<li><span val="天津市" data-areaid="120000">天津市</span></li>
+				<li><span val="河北省" data-areaid="130000">河北省</span></li>
+				<li><span val="山西省" data-areaid="140000">山西省</span></li>
+				<li><span val="内蒙古" data-areaid="150000">内蒙古</span></li>
+				
+				<li><span val="辽宁省" data-areaid="210000">辽宁省</span></li>
+				<li><span val="吉林省" data-areaid="220000">吉林省</span></li>
+				<li><span val="黑龙江省" data-areaid="230000">黑龙江省</span></li>
+				<li><span val="上海市" data-areaid="310000">上海市</span></li>
+				<li><span val="江苏省" data-areaid="320000">江苏省</span></li>
+				
+				<li><span val="浙江省" data-areaid="330000">浙江省</span></li>
+				<li><span val="安徽省" data-areaid="340000">安徽省</span></li>
+				<li><span val="福建省" data-areaid="350000">福建省</span></li>
+				<li><span val="江西省" data-areaid="360000">江西省</span></li>
+				<li><span val="山东省" data-areaid="370000">山东省</span></li>
+				
+				<li><span val="河南省" data-areaid="410000">河南省</span></li>
+				<li><span val="湖北省" data-areaid="420000">湖北省</span></li>
+				<li><span val="湖南省" data-areaid="430000">湖南省</span></li>
+				<li><span val="广东省" data-areaid="440000">广东省</span></li>
+				<li><span val="广西" data-areaid="450000">广西省</span></li>
+				
+				<li><span val="海南省" data-areaid="460000">海南省</span></li>
+				<li><span val="重庆" data-areaid="500000">重庆市</span></li>
+				<li><span val="四川省" data-areaid="510000">四川省</span></li>
+				<li><span val="贵州省" data-areaid="520000">贵州省</span></li>
+				<li><span val="云南省" data-areaid="530000">云南省</span></li>
+				
+				<li><span val="西藏" data-areaid="540000">西藏</span></li>
+				<li><span val="陕西省" data-areaid="610000">陕西省</span></li>
+				<li><span val="甘肃省" data-areaid="620000">甘肃省</span></li>
+				<li><span val="青海省" data-areaid="630000">青海省</span></li>
+				<li><span val="宁夏" data-areaid="640000">宁夏</span></li>
+				
+				<li><span val="新疆" data-areaid="650000">新疆</span></li>
+				<li><span val="台湾省" data-areaid="710000">台湾省</span></li>
+				<li><span val="香港" data-areaid="810000">香港</span></li>
+				<li><span val="澳门" data-areaid="820000">澳门</span></li>
+				
+				<li><span val="国家" data-areaid="100000">国家</span></li>
+				<li><span val="军区" data-areaid="700000">军区</span></li>
+				<li><span val="战区" data-areaid="690000">战区</span></li>
+			</ul>
+		</div>
+		<div class="con">
+			<ul>
+			<li><span val="全部" data-areaid='1'>全部</span></li>
+			<li><span val="标书解读" data-areaid='1'>标书解读</span></li>
+			<li><span val="项目分析" data-areaid='1'>项目分析</span></li>
+			<li><span val="政策分析" data-areaid='1'>政策分析</span></li>
+			<li><span val="电子期刊" data-areaid='1'>电子期刊</span></li>
+			
+			<li><span val="行业分析" data-areaid='1'>行业分析</span></li>
+			<li><span val="汇总类表格" data-areaid='1'>汇总类表格</span></li>
+			<li class="division_line"><div></div></li>
+			<li><span val="全部" data-areaid='0'>全部</span></li>
+			<li><span val="招标项目" data-areaid='0'>招标项目</span></li>
+			<li><span val="招标资讯" data-areaid='0'>招标资讯</span></li>
+			<li><span val="基药政策" data-areaid='0'>基药政策</span></li>
+			<li><span val="新农合政策" data-areaid='0'>新农合政策</span></li>
+			<li><span val="医保政策" data-areaid='0'>医保政策</span></li>
+			<li><span val="低价药政策" data-areaid='0'>低价药政策</span></li>
+			<li><span val="OTC政策" data-areaid='0'>OTC政策</span></li>
+			<li><span val="其他政策" data-areaid='0'>其他政策</span></li>
+			<li><span val="政策解读" data-areaid='0'>政策解读</span></li>
+			</ul>
+		</div>
+		<div class="con">
+			<ul>
+			<li><span  val="全部" data-areaid='0'>全部</span></li>
+			<li><span val="本月" data-areaid='1'>本月</span></li>
+			<li><span val="本周" data-areaid='2'>本周</span></li>
+			<li><span val="今天" data-areaid='3'>今天</span></li>
+			
+			<li class="division_line"><div></div></li>
+			
+				<div class="mui-content">
+			<h5 class="mui-content-padded">时间阶段</h5>
+			<div class="mui-card">
+				<div class="mui-input-row">
+						<label>开始时间</label>
+						<input data-options='{"type":"date"}' id="startTime" class="mui-input tap_picker" type="text" placeholder="选择开始时间">
+					</div>
+					<div class="mui-input-row">
+						<label>结束时间</label>
+						<input data-options='{"type":"date"}' id="endTime" type="text" class="mui-input tap_picker" placeholder="选择结束时间">
+					</div>
+			</div>
+			</ul>
+		</div>
+	</div>
+	</body>
+	
+	<script src="../js/mui.min.js"></script>
+	<script src="../js/jquery-1.11.1.min.js"></script>
+	<script type="text/javascript" src="../js/laytpl.js" ></script>
+	<script src="../js/city.data.js" type="text/javascript" charset="utf-8"></script>
+	 <script src="../js/mui.picker.min.js" type="text/javascript" charset="utf-8"></script>
+	 <script src="../js/timeUtils.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" charset="UTF-8">
+      	(function($) {
+				$.init({
+		      		preloadPages:[{
+					    id:'search_result.html',
+					    url:'search_result.html'           
+					  }
+					  ],
+					 beforeback: function(){
+							//释放内存
+							startTime=null, endTime=null;
+							plus.webview.close(detailPage);
+							detailPage = null;
+							 search = null;
+			      			 area = null;
+			    				 areaid = null;
+			    				 datetime = null;
+			    				 dictype = null;
+			    				 type = null;
+			    				 channelName  = null;
+			    				 data_date = null;
+							//返回true，继续页面关闭逻辑
+							return true;
+						}
+		      	});
+				var datetime = document.getElementById("date");
+					mui(".tap_picker").each(function(){
+						
+						this.addEventListener('tap', function() {
+							datetime.setAttribute("data-areaid","4")
+						var optionsJson = this.getAttribute('data-options') || '{}';
+						var options = JSON.parse(optionsJson);
+						var id = this.getAttribute('id');
+						var $input = this
+						datetime.innerHTML="自定义"
+						var picker = new $.DtPicker(options);
+						picker.show(function(rs) {
+							$input.value =rs.y.value+"-"+rs.m.value+"-"+rs.d.value;
+							//picker.dispose()
+							picker = null,optionsJson= null,options=null;
+							id = null,$input=null,rs= null;
+						});
+					}, false);
+					})
+					
+			})(mui);
+      	
+      	var startTime=null,endTime=null;
+      	var detailPage=null;
+      	var search = null;
+		var area = null;
+		var areaid =null;
+		var datetime = null;
+		var dictype = null;
+		var type = null;
+		var channelName  = null;
+		var data_date = null;
+      	mui.plusReady(function() {
+    			document.getElementById("searchBtn").addEventListener('tap',function() {
+    				 search = document.getElementById("searchContent");
+				 area = document.getElementById("area");
+				 areaid = area.getAttribute('data-areaid');
+				 datetime = document.getElementById("date");
+				 dictype = document.getElementById("dictype");
+				 type = dictype.getAttribute('data-areaid');
+				 channelName  = dictype.innerHTML;
+				 data_date = datetime.getAttribute("data-areaid");
+    				 searchkey = search.value;
+    				
+    				switch(data_date){
+    					case '0':
+    						startTime = null;
+	    					endTime =  null;
+    						break;
+    					case '1':
+    						startTime = getMonthStartDate()
+	    					endTime = getMonthEndDate()
+    						break;
+    					case '2':
+	    					startTime = getWeekStartDate()
+	    					endTime = getWeekEndDate()
+    						break;
+    					case '3':
+    						startTime = formatDate(now)
+	    					endTime = formatDate(now)
+    						break;
+    					case '4':
+    						startTime = document.getElementById("startTime").value;
+	    					endTime = document.getElementById("endTime").value;
+    						break;
+    				}
+				if (channelName == '选择栏目'){
+    					type = plus.storage.getItem('searchType');
+    				}
+    				if (channelName == '选择栏目' || channelName == '全部' ) {
+    					channelName = '';
+    				}
+    				
+    				if (!searchkey){
+    					searchkey='';
+    				}
+//  				//获得详情页面
+				  if(!detailPage){
+				    detailPage = plus.webview.getWebviewById('search_result.html');
+				  }
+				  detailPage.show();
+				 console.log(JSON.stringify({
+				    Areaid:areaid,
+				    keyword:searchkey,
+				    ChannelName:channelName,
+				    Type:type,
+				    startTime:startTime,
+				    endTime:endTime
+				  }))
+//				   //触发详情页面的newsId事件
+				  mui.fire(detailPage,'newsId',{
+				    Areaid:areaid,
+				    keyword:searchkey,
+				    ChannelName:channelName,
+				    Type:type,
+				    startTime:startTime,
+				    endTime:endTime
+				  });
+
+    			});
+    			
+    			
+    		});
+    		
+		$(function(){
+			var index=0;
+			$(".serch_con").find(".con").eq(0).css("display","block");
+			$(".serch_tit").find("span").click(function(){
+				index=$(this).index()
+				$(".serch_tit").find("span").removeClass("on");
+				$(this).addClass("on");
+				$(".serch_con").find(".con").css("display","none");
+				$(".serch_con").find(".con").eq(index).css("display","block");				
+				});
+				//选取内容
+				$(".serch_con ul li span").click(
+					function(){
+						$(this).parents("ul").find("span").css({"border":"1px solid #888","color":"#333"});
+						$(this).css({"border":"1px solid #0070bc","color":"#0070bc"});
+						$(".serch_tit span").eq(index).text($(this).text());
+						$(".serch_tit span").eq(index).attr("data-areaid",$(this).attr("data-areaid"));						
+				});
+			});
+    </script>
+    
+</body>
+</html>

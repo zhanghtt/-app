@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>附件清单</title>
+    
+    <link href="../css/mui.min.css" rel="stylesheet"/>
+    <style>
+		.title{
+			margin: 20px 0px 7px;
+			color: #000;
+			font-size: 17px;
+			background-color: #fff;
+		}
+		#setting_list div.mui-table-view-cell:after { left: 0px;}
+		#setting_list div.mui-table-view-cell:before {
+    position: absolute;
+    right: 0;
+    top: 0;
+    left: 0px;
+    height: 1px;
+    content: '';
+    -webkit-transform: scaleY(.5);
+    transform: scaleY(.5);
+    background-color: #c8c7cc;
+}
+		.powered{
+			bottom: 0; 
+			position: absolute; 
+			text-align: center; 
+			width: 100%; 
+			padding-bottom:0.5rem;
+			font-size: 0.6rem; 
+			color: #aaa; 
+			line-height: 1rem;
+		}
+		.title{
+				margin: 20px 15px 7px;
+				color: #6d6d72;
+				font-size: 15px;
+			}
+	</style>
+</head>
+<body>	
+	<div class="mui-content" id="setting_list">
+		<ul class="mui-table-view" id="tpl_list">
+			
+			 
+		</ul>
+		
+		<nav class="powered" onclick="mui.toast('欢迎来到易联招采APP');">易联招采APP <span id="curvar"></span><br> &copy; 2016</nav>
+	</div>
+	<!--模板-->
+	<script id="cache_list_byUser" type="text/html">
+				
+				 	 <li name="{{d.name}}"  class="listview_useritem mui-table-view-cell mui-collapse">
+				 	    <a class="mui-navigate-right " href="#">
+				 	    	<span class="mui-icon mui-icon-contact"></span>
+				 	    	{{d.name}}
+				 	    </a>
+				 	 	<span class="mui-badge mui-badge-primary">{{d.cache_user.length}}</span>
+				 	 	{{# if(d.cache_user.length!=0) { }}
+				 	 	<div style="padding-top: 0px;margin-top: 0px;" class="mui-collapse-content mui-table-view">
+				 	 		<ul class="mui-table-view">
+				 	 		{{# for(var index in d.cache_user){ }}
+				 	 		 	<li   id="{{index}}" class="mui-table-view-cell mui-collapse">
+				 	 		 		<div class="mui-slider-right mui-disabled">
+				 	 		 			
+										<a nodename="{{d.name}}" filename="{{d.cache_user[index]}}" filepath="{{download_path+d.name+'/'+d.cache_user[index]}}" name="deletebtn" class="mui-btn mui-btn-red">删除</a>
+									</div>
+									<div filePath="{{d.name+'/'+d.cache_user[index]}}"  class="mui-slider-handle">
+										<span class="mui-icon mui-icon-download"></span>
+				 	 		 		   {{d.cache_user[index]}}
+				 	 		 		</div>
+				 	 		 		</li>
+			
+			 				{{#  }}}
+			 				{{#  }}}
+							</ul>
+						</div>
+				 	 </li>
+				 	 				
+			</script>
+	
+	
+	<script src="../js/jquery-1.11.1.min.js"></script>
+	<script src="../js/mui.min.js"></script>
+	<script src="../js/ajax.js"></script>
+	
+    <script type="text/javascript" src="../js/laytpl.js" ></script>
+	<script type="text/javascript" charset="UTF-8">
+      	mui.init({
+      		swipeBack: true, //右滑功能
+      		beforeback: function(){
+					//释放内存
+					transtime = null;
+					return true;
+					}
+      	});
+		var transtime = getNowFormatDate();
+      	mui.plusReady(function() {
+      		mui("#tpl_list").on('tap','li.listview_useritem',function(){
+      			var name = this.getAttribute("name");
+      			var badge = mui("#tpl_list li[name='"+name+"'].listview_useritem span.mui-badge")[0].innerHTML;
+      			if(badge=='0'){
+      				mui.alert("用户"+name+"已无缓存")
+      			}
+      		})
+      		
+      		mui("#tpl_list ").on('tap','.mui-slider-handle',function(){
+      			openFile(this.getAttribute("filePath"))
+      		})
+      		
+      		//删除事件
+      		mui("#tpl_list").on('tap','a[name=deletebtn]',function(){
+      			var $this = this
+      			var filepath  = this.getAttribute("filepath");
+      			var filename = this.getAttribute("filename");
+      			var nodename = this.getAttribute("nodename");
+      			mui.confirm("确定要删除"+filename,"删除",['是','否'],function(e){
+      				if (e.index == 0) {
+						plus.io.resolveLocalFileSystemURL(filepath,function(entry){
+							// remove this file
+							entry.remove( function ( entryitem ) {
+								mui.toast( "删除成功" );
+								//刷新listview
+								//getData_cache(true)
+								var $li = $this.parentNode.parentNode;
+								$li.parentNode.removeChild($li);
+								var badge = mui("#tpl_list li[name='"+nodename+"'].listview_useritem span.mui-badge")[0];
+								var badgeNum =  Number(badge.innerHTML);
+								badge.innerHTML = badgeNum-1;
+								if(Number(badge.innerHTML)==0){
+									getData_cache(true)
+								}
+							}, function ( e ) {
+								mui.alert( e.message );
+							} );
+						},function(e){
+							mui.alert("遇到错误："+JSON.stringify(e))
+						})
+					} 
+      			})
+      		})
+      		
+      		//加载缓存数据
+      		getData_cache(false);
+      		
+      });
+      
+      function getData_cache(option){
+      	//获取当前用户磁盘缓存目录，对象序列
+      		plus.io.resolveLocalFileSystemURL(download_path,function(entry) {
+      			var directoryReader = entry.createReader();
+      			//读取子文件
+      			var index_control=0;
+      			var cache_users = [];
+      			directoryReader.readEntries( function( entries_user ){
+      			
+      				
+				for(var i=0; i < entries_user.length; i++ ) {
+					if(!entries_user[i].isDirectory) continue;
+					var directory_childReader = entries_user[i].createReader();
+					
+					var user_id = entries_user[i].name;
+					//console.log("user_id:",user_id)
+					 
+					cache_users.push({name:user_id})
+					directory_childReader.readEntries(function(entries_child){
+						var user_item = [];
+						for(var item in entries_child){
+							user_item.push(entries_child[item].name)
+						}
+						cache_users[index_control].cache_user=user_item;
+						
+						if(index_control==entries_user.length-1){
+							loadtpl_Bycache(cache_users,option)
+						}
+						index_control++;
+					})
+				}
+				}, function ( e ) {
+					mui.alert( "Read entries failed: " + e.message );
+				} );
+			},function(e){
+				mui.alert("不存在磁盘缓存")
+			});
+      }
+      
+      function loadtpl_Bycache(cache_users,option){
+      
+      	var gettpl = document.getElementById('cache_list_byUser').innerHTML;
+      	mui.each(cache_users,function(){
+      		laytpl(gettpl).render(this, function(html){
+      			if(option){
+      				 document.getElementById('tpl_list').innerHTML = '';
+      			}
+      			document.getElementById('tpl_list').innerHTML =document.getElementById('tpl_list').innerHTML + html;	
+		});
+      	})
+		
+		}
+      
+function openFile(fileNamePath){
+	//console.log(fileName)
+	//plus.runtime.openURL(fileName)
+	var relativePath = download_path+fileNamePath
+	if(fileNamePath.endWith('.zip')||fileNamePath.endWith('.rar')||(!mui.os.ios)){
+		plus.runtime.openFile(relativePath)
+  		return;
+	}
+		  mui.openWindow({
+					id: 'downloaddetail',
+					url: 'downloaddetails.html',
+					styles: {
+						top: 0,
+						bottom: 0,
+						bounce: 'none',
+						zindex:1,
+    					popGesture: 'close' // 'hide', 'close','none'
+					},
+					 extras:{
+					 	pageurl:relativePath,
+					 },
+					 waiting:{
+					 	autoShow:false,
+					 },
+					createNew:false,//是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+				});
+}
+    </script>
+</body>
+</html>

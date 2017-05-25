@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>版本</title>
+    
+    <link href="../css/mui.min.css" rel="stylesheet"/>
+    <style>
+		.title{
+			margin: 20px 0px 7px;
+			color: #000;
+			font-size: 17px;
+			background-color: #fff;
+		}
+		#setting_list div.mui-table-view-cell:after { left: 0px;}
+		#setting_list div.mui-table-view-cell:before {
+    position: absolute;
+    right: 0;
+    top: 0;
+    left: 0px;
+    height: 1px;
+    content: '';
+    -webkit-transform: scaleY(.5);
+    transform: scaleY(.5);
+    background-color: #c8c7cc;
+}
+		.powered{
+			bottom: 0; 
+			position: absolute; 
+			text-align: center; 
+			width: 100%; 
+			padding-bottom:0.5rem;
+			font-size: 0.6rem; 
+			color: #aaa; 
+			line-height: 1rem;
+		}
+		.title{
+				margin: 20px 15px 7px;
+				color: #6d6d72;
+				font-size: 15px;
+			}
+		.headImg {
+    			position: relative;
+    			padding: 15px 0px 5px 0px;
+    			border-radius: 5px;
+    			
+    		}
+	</style>
+</head>
+<body>	
+	<div style="text-align: center;">
+		<img class="headImg"  src="../icon/icon.png" />
+		<div id="version"></div>
+	</div>
+	
+	<div class="mui-content" id="setting_list">
+		<ul class="mui-table-view">
+			 <li class="mui-table-view-cell" id = "checkUpdate">
+			 	<a class="mui-navigate-right">
+			 		<span class="mui-icon mui-icon-loop"></span>
+			 		检查更新
+			 	</a>
+			 </li>
+			 <!--<li class="mui-table-view-cell" id = "about_company">
+			 	<a class="mui-navigate-right">
+			 		<span class="mui-icon mui-icon-info"></span>
+			 		公司介绍
+			 	</a>
+			 </li>-->
+	        
+		</ul>
+		<!--<div id="about_company"></div>-->
+		<nav class="powered" onclick="mui.toast('欢迎来到易联招采APP');">易联招采APP <span id="curvar"></span><br> &copy; 2016</nav>
+	</div>
+	
+	<script src="../js/jquery-1.11.1.min.js"></script>
+	<script src="../js/mui.min.js"></script>
+	<script src="../js/ajax.js"></script>
+	<script type="text/javascript" src="../js/index/updatefunc.js" ></script>
+	<script type="text/javascript" charset="UTF-8">
+      	mui.init({
+      		swipeBack: true, //右滑功能
+      		keyEventBind: {
+				backbutton: false  //关闭back按键监听
+			}
+      	});
+      	var version=null;
+      	var token=null;
+		var user=null;
+		var transtime = getNowFormatDate();
+      	mui.plusReady(function() {
+      		user = judgeLogin();
+			token = user.token;
+      		
+      		 plus.runtime.getProperty(plus.runtime.appid,function(inf){
+      		 	version = inf.version
+			        document.getElementById("version").innerText = "易联招采(" + inf.version + ")"		    		
+			    });	
+			
+			if(mui.os.ios){
+				document.getElementById("checkUpdate").style.display = 'none'
+			}
+			
+      		document.getElementById("checkUpdate").addEventListener('tap',function(){
+      			plus.nativeUI.showWaiting("检测更新...");
+      			checkUpdate(version)
+      		})
+//    		document.getElementById("about_company").addEventListener('tap',function(){
+//    			openpage("about_company.html")
+//    		})
+//    		mui.ajax(ajax_getAboutCompany,{
+//				data:{},
+//				type:'get',
+//				timeout:10000,
+//				success:function(data_){
+//					document.getElementById("about_company").innerHTML = data_+data_
+//				}});
+      	});
+		
+   </script>    
+</body>
+</html>

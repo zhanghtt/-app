@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>资讯消息</title>
+    <script src="../js/mui.min.js"></script>
+    <link href="../css/mui.min.css" rel="stylesheet"/>
+    <link href="../css/zssg.css" rel="stylesheet"/>
+    <script type="text/javascript" charset="UTF-8">
+      	mui.init();
+      	var ws=null;
+      	// 扩展API加载完毕，现在可以正常调用扩展API
+      	function plusReady(){
+      		plus.nativeUI.closeWaiting();//关闭等待框
+      		ws=plus.webview.currentWebview();//给当前页面命名
+      		pageurl = ws.pageurl;
+      		getcontent();
+
+      	}
+// 判断扩展API是否准备，否则监听"plusready"事件
+if(window.plus){
+	plusReady();
+}else{
+	document.addEventListener("plusready",plusReady,false);
+}
+function getcontent() {
+	mui.ajax(pageurl,{
+		data:{
+			},
+		dataType:'html',
+		type:'get',
+		timeout:10000,
+		success:function(data){
+			document.getElementById("content").innerHTML = data;
+		},
+		error:function(xhr,type,errorThrown){
+			//异常处理；
+			mui.toast("请求出错");
+		}
+	});
+}
+
+
+    </script>
+    <style>
+		body { padding-bottom: 60px;}
+		body,p,div { color: #666;}
+		.colletion_main { margin: 15px 15px 60px;}
+		.mui-bar-nav a { color: #fff;}
+	</style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav" >
+			<a class="mui-icon mui-icon-back mui-pull-left" style="color: #fff;"></a>
+			<h1 class="mui-title" id="header">易联招采</h1>
+	</header>
+	<!--主体部分-->
+	<div class="mui-content colletion_main">
+		<div id="content">
+				
+		</div>
+	</div>
+	</div>
+	
+</body>
+</html>

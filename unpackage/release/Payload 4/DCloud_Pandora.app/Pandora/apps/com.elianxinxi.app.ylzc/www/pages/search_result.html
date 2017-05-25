@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link href="../css/mui.min.css" rel="stylesheet"/>
+    <link href="../css/mystyle.css" rel="stylesheet" />
+    <style>
+    	.collectbox { margin: 20px auto 0px; padding: 0px;}
+     	.collectbox ul { margin: 0px; padding: 0px; margin: 0px 15px; background-color: transparent;}     	
+     	.collectbox ul li {position: relative; padding:10px 25px 10px 15px; box-sizing: border-box; border:1px solid #ddd; margin: 0px auto 16px; background-color: #fff; color: #333; border-radius: 6px;}
+		.mui-table-view-chevron li.mui-table-view-cell { padding-right: 25px;}
+		.collectbox ul li>div { padding: 0px; margin: 0px; float: none; display: block;}
+		.collectbox ul li .jiantao { position: absolute; right: 3px; top: 30px; color: #aeaeaf;}
+		.collectbox ul li p { margin-bottom: 10px; padding: 0px; }		
+		.collectbox ul li p a{ color: #333;}
+		.collectbox ul li p a span { display: inline-block; margin-right: 3px; color: #d80202;}
+		.collectbox ul li div div { line-height: 22px; color: #a7a5a5;}
+		.collectbox ul li div div a { float: left; padding: 0px 8px; margin-right: 10px; max-width: 168px; height: 22px; line-height: 22px; color: #fff; background-color: #08aa45;
+		 border-radius: 30px;}
+		 .cancel { display: block; text-align: right; background-color: transparent; color: #d80202;}
+		 .mui-table-view-cell:after{height:0px;}
+		 
+		 @media screen and (max-width:330px) {
+			.collectbox ul li div div a  { max-width: 150px; }	
+	
+}
+    	
+    </style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav">
+	    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+	    <h1 class="mui-title">搜索结果</h1>
+	</header>
+	<!--下拉刷新容器-->
+	<div id="pullrefresh" class="mui-content mui-scroll-wrapper collectbox">
+		<div class="mui-scroll">
+			<!--数据列表-->
+			<ul class="mui-table-view mui-table-view-chevron" id="messageTable">
+				
+			<script type="text/html" id="messageLCellTpl">
+			{{# for(var i = 0, len = d.length; i < len; i++){ }}
+				<li class="mui-table-view-cell" article-type='{{ d[i].ChannelID }}' data-id='{{ d[i].ArticleID}}' >
+					<div>
+						<p id="title" ><a>{{ d[i].title}}</a></p>
+						<div ><a href="#" id="ppsourceurl" data-newhref='{{ d[i].sourceurl}}' >{{ d[i].sourceName}}</a><span>{{ d[i].publicdate}}</span></div>			
+						<span  class="mui-icon mui-icon-forward jiantao"></span>
+					</div>
+				</li>	
+			{{# } }}
+			
+			</script>
+			</ul>
+		</div>
+	</div>
+	<script src="../js/mui.min.js"></script>
+	<script src="../js/ajax.js",type="text/javascript"></script>
+	<script type="text/javascript" src="../js/laytpl.js" ></script>
+	<script type="text/javascript" charset="UTF-8">
+		mui.init({
+			pullRefresh: {
+				container: '#pullrefresh',
+				down: {
+					callback: pulldownRefresh
+				},
+				up: {
+					contentrefresh: '正在加载...',
+					callback: pullupRefresh
+				},
+				beforeback: function(){
+					//释放内存
+					 //messagetpl = null;
+					 keyword=null;
+					 ChannelName=null;
+					 Areaid=null;
+					 Type=null;
+					 transtime = null;
+					 page=null;
+					 atitle=null;
+					 //laytpl = null;
+					 startTime=null, endTime=null;
+					 //document.body.innerHTML = '';
+					//返回true，继续页面关闭逻辑
+					return true;
+				}
+			}
+		});
+		var messagetpl = document.getElementById('messageLCellTpl').innerHTML;
+		var keyword=null;
+		var ChannelName=null;
+		var Areaid=null;
+		var Type=null;
+		var transtime = getNowFormatDate();
+		var page=null;
+		var atitle=null;
+		var  startTime=null, endTime=null;
+		mui.plusReady(function() {
+			var url = ajax_articleDetailURL;
+			//添加newId自定义事件监听，先服务器请求数据
+			window.addEventListener('newsId',function(event){
+				page = 1;
+				keyword = event.detail.keyword;
+				ChannelName = event.detail.ChannelName;
+				Areaid = event.detail.Areaid;
+				Type = event.detail.Type;
+				 startTime = event.detail.startTime;
+				 endTime = event.detail.endTime;
+				getSearchInfoList(1);
+			})
+			mui('.mui-table-view-chevron').on('tap','li',function(){
+				var user,token='';
+				user = judgeLogin();
+			    	if(user){
+			    	     token = user.token;
+			    	}
+				var channelID = this.getAttribute('article-type');
+				var articleID = this.getAttribute('data-id');
+				var url = ajax_articleDetailURL;
+				if (Type == 0){
+					atitle = '资讯信息';
+				}else {
+					atitle = '深度分析';
+				}
+				mui.openWindow({
+					id: 'search_base_page.html',
+					url: 'base_page.html',
+					styles: {
+						top: 0,
+						bottom: 0,
+						bounce: 'none',
+						popGesture: 'close'
+					},
+					 extras:{
+					 	pageurl:url,
+					 	usertoken:token,
+					 	transtime:transtime,
+					 	pagechannelid:channelID,
+					 	pagearticleid:articleID,
+					 	atitle:atitle,
+					 },
+					 waiting:{
+					 	autoShow:false,
+					 },
+					createNew:false,//是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+				});
+			});
+			mui('.mui-table-view-chevron').on('tap','#ppsourceurl',function(){
+				var newurl = this.getAttribute('data-newhref');
+				if (newurl) {
+					plus.runtime.openURL(newurl);
+				}else {
+					mui.toast('来源网址为空');
+				}
+			});		
+		})
+		
+		function getSearchInfoList(page) {
+				var user,token='';
+				user = judgeLogin();
+			    	if(user){
+			    	     token = user.token;
+			    	}
+			mui.ajax(ajax_SearchURL,{
+					data:{
+						transtime:transtime,
+						pageIndex:page,
+						keyword:keyword,
+						ChannelName:ChannelName,
+						Areaid:Areaid,
+						Type :Type,
+						startTime:startTime,
+					    	endTime:endTime,
+					    	token:token
+					},
+					dataType:'json',
+					type:'post',
+					timeout:10000,
+					success:function(data){
+						data = JSON.parse(data);
+						if (data.result == 1 ){
+							if (page == 1){
+								if (data.SearchResult.length == 0) {
+									mui.toast('搜索数据为空');
+								}
+								laytpl(messagetpl).render(data.SearchResult,function(h){		
+									document.getElementById('messageTable').innerHTML = h;
+								});
+							}else {
+								var table = document.body.querySelector('.mui-table-view');
+								var cells = document.body.querySelectorAll('.mui-table-view-cell');
+								var d = data.SearchResult
+								for (var i = 0, len = d.length; i < len; i++) {
+									var li = document.createElement('li');
+									li.className = 'mui-table-view-cell';
+									li.setAttribute('article-type',d[i].ChannelID);
+									li.setAttribute('data-id',d[i].ArticleID);
+									
+									li.innerHTML = '<div><p id="title" article-type='+ d[i].ChannelID + ' data-id='+ d[i].ArticleID +'><a>' + d[i].title+ 
+									'</a></p><div id="ppsourceurl" data-newhref='+ d[i].sourceurl + '><a href="#" >'+ d[i].sourceName+'</a><span>' + d[i].publicdate +
+									'</span></div><span class="mui-icon mui-icon-forward jiantao"></span></div>';
+									table.appendChild(li);
+								}
+							}
+						}
+					},
+					error:function(xhr,type,errorThrown){
+						//异常处理；
+						mui.toast("请求出错");
+					}
+				});
+		}
+		
+		/**
+		 * 下拉刷新具体业务实现
+		 */
+		function pulldownRefresh() {
+			setTimeout(function() {
+				getSearchInfoList(1);
+				page = 1;
+				mui('#pullrefresh').pullRefresh().endPulldownToRefresh(); //refresh completed
+			}, 1500);
+		}
+		var count = 0;
+		/**
+		 * 上拉加载具体业务实现
+		 */
+		function pullupRefresh() {
+			page++;
+			//(++count > 4)
+			setTimeout(function() {
+				//参数为true代表没有更多数据了。
+				var table = document.body.querySelector('.mui-table-view');
+				var cells = document.body.querySelectorAll('.mui-table-view-cell');
+				getSearchInfoList(page);
+				mui('#pullrefresh').pullRefresh().endPullupToRefresh(); 
+			}, 1500);
+		}
+		if (mui.os.plus) {
+			mui.plusReady(function() {
+				setTimeout(function() {
+					mui('#pullrefresh').pullRefresh().pullupLoading();
+				}, 1000);
+
+			});
+		} else {
+			mui.ready(function() {
+				mui('#pullrefresh').pullRefresh().pullupLoading();
+			});
+		}
+		
+	
+		
+	</script>
+</body>
+</html>

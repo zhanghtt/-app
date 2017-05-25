@@ -1,0 +1,34 @@
+* {
+-webkit-touch-callout:none;
+-webkit-user-select:none;
+-khtml-user-select:none;
+-moz-user-select:none;
+-ms-user-select:none;
+user-select:none;
+}
+header.mui-bar{background:#0070bc;}
+.mui-title{color:#ffffff}
+.mui-bar-tab .mui-tab-item.mui-active{color:#0070bc}
+.mui-bar-tab{box-shadow: none;}
+.mui-grid-view.mui-grid-9{width:100%;}
+.mui-grid-view.mui-grid-9 .mui-table-view-cell{border-right:1px solid #ddd; border-bottom:1px solid #ddd; width:33.333%; background: #ffffff; display: block;float: left; position: inherit;}
+.mui-grid-view.mui-grid-9 .mui-table-view-cell img{ max-height: 45px; min-width: 45px;margin: 0 auto; padding:10px; border:1px solid #cccccc;border-radius:45px;}
+.mui-bar-tab .mui-tab-item .mui-icon{font-size:24px; height:32px; width:30px; font-weight: 100; line-height: 32px;}
+.mui-bar-tab{height:44px; border-top:1px solid #ddd;}
+.mui-bar-tab .mui-tab-item .mui-icon ~ .mui-tab-label{font-size:14px;}
+.mui-table-view-cell p{color:#000000; font-size:1.2em; word-break: break-all;white-space: normal;}
+#nav{box-shadow:none; border-top: 1px solid #eee ;}
+.mui-bar-tab .mui-tab-item{height:44px;}
+/*bbS*/
+.list {
+    border-bottom: 1px solid #eee;
+    height: auto;
+    overflow: hidden;
+    width: 100%;
+}
+.list .f_nm{font-size:16px; margin-top:10px; line-height: 45px;}
+.list a,.list span{color:#000; text-decoration: none; border:none;}
+.list .a{display:block; float:left;}
+.list .a span{font-size:12px; color:#999;}
+.list .into{width:45px; display:block; float:right;margin-top: 20px;}
+.list .into a{display:block; width:40px; text-align:center; height:25px; line-height:25px; border:1px solid red; font-size:13px; color:red;}
